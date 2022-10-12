@@ -1,19 +1,24 @@
 package com.macro.mall.controller;
 
 import cn.hutool.core.collection.CollUtil;
+import com.aliyun.oss.common.utils.HttpHeaders;
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
 import com.macro.mall.dto.UmsAdminLoginParam;
-import com.macro.mall.dto.UmsAdminParam;
+import com.macro.mall.dto.User;
 import com.macro.mall.dto.UpdateAdminPasswordParam;
-import com.macro.mall.model.UmsAdmin;
+import com.macro.mall.model.UmsLoginInfo;
 import com.macro.mall.model.UmsRole;
 import com.macro.mall.service.UmsAdminService;
 import com.macro.mall.service.UmsRoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +36,10 @@ import java.util.stream.Collectors;
  */
 @Controller
 @Api(tags = "UmsAdminController", description = "后台用户管理")
-@RequestMapping("/admin")
+@RequestMapping("/caishifu")
 public class UmsAdminController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UmsAdminController.class);
+
     @Value("${jwt.tokenHeader}")
     private String tokenHeader;
     @Value("${jwt.tokenHead}")
@@ -45,12 +52,13 @@ public class UmsAdminController {
     @ApiOperation(value = "用户注册")
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<UmsAdmin> register(@Validated @RequestBody UmsAdminParam umsAdminParam) {
-        UmsAdmin umsAdmin = adminService.register(umsAdminParam);
-        if (umsAdmin == null) {
-            return CommonResult.failed();
+    public ResponseEntity<CommonResult> register(@Validated @RequestBody User user) {
+        LOGGER.debug("Register detais is " + user.toString());
+        UmsLoginInfo umsLoginInfo = adminService.register(user);
+        if (umsLoginInfo == null) {
+            return new ResponseEntity(CommonResult.failed(), HttpStatus.resolve((int) CommonResult.failed().getCode()));
         }
-        return CommonResult.success(umsAdmin);
+        return new ResponseEntity(CommonResult.success(umsLoginInfo),HttpStatus.OK);
     }
 
     @ApiOperation(value = "登录以后返回token")
@@ -90,12 +98,12 @@ public class UmsAdminController {
             return CommonResult.unauthorized(null);
         }
         String username = principal.getName();
-        UmsAdmin umsAdmin = adminService.getAdminByUsername(username);
+        UmsLoginInfo umsLoginInfo = adminService.getAdminByUsername(username);
         Map<String, Object> data = new HashMap<>();
-        data.put("username", umsAdmin.getUsername());
-        data.put("menus", roleService.getMenuList(umsAdmin.getId()));
-        data.put("icon", umsAdmin.getIcon());
-        List<UmsRole> roleList = adminService.getRoleList(umsAdmin.getId());
+        data.put("username", umsLoginInfo.getUsername());
+        data.put("menus", roleService.getMenuList(umsLoginInfo.getId()));
+        data.put("icon", umsLoginInfo.getIcon());
+        List<UmsRole> roleList = adminService.getRoleList(umsLoginInfo.getId());
         if(CollUtil.isNotEmpty(roleList)){
             List<String> roles = roleList.stream().map(UmsRole::getName).collect(Collectors.toList());
             data.put("roles",roles);
@@ -113,25 +121,25 @@ public class UmsAdminController {
     @ApiOperation("根据用户名或姓名分页获取用户列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult<CommonPage<UmsAdmin>> list(@RequestParam(value = "keyword", required = false) String keyword,
-                                                   @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
-                                                   @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
-        List<UmsAdmin> adminList = adminService.list(keyword, pageSize, pageNum);
+    public CommonResult<CommonPage<UmsLoginInfo>> list(@RequestParam(value = "keyword", required = false) String keyword,
+                                                       @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
+                                                       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        List<UmsLoginInfo> adminList = adminService.list(keyword, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(adminList));
     }
 
     @ApiOperation("获取指定用户信息")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult<UmsAdmin> getItem(@PathVariable Long id) {
-        UmsAdmin admin = adminService.getItem(id);
+    public CommonResult<UmsLoginInfo> getItem(@PathVariable Long id) {
+        UmsLoginInfo admin = adminService.getItem(id);
         return CommonResult.success(admin);
     }
 
     @ApiOperation("修改指定用户信息")
     @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult update(@PathVariable Long id, @RequestBody UmsAdmin admin) {
+    public CommonResult update(@PathVariable Long id, @RequestBody UmsLoginInfo admin) {
         int count = adminService.update(id, admin);
         if (count > 0) {
             return CommonResult.success(count);
@@ -172,9 +180,9 @@ public class UmsAdminController {
     @RequestMapping(value = "/updateStatus/{id}", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult updateStatus(@PathVariable Long id,@RequestParam(value = "status") Integer status) {
-        UmsAdmin umsAdmin = new UmsAdmin();
-        umsAdmin.setStatus(status);
-        int count = adminService.update(id,umsAdmin);
+        UmsLoginInfo umsLoginInfo = new UmsLoginInfo();
+        umsLoginInfo.setStatus(status);
+        int count = adminService.update(id, umsLoginInfo);
         if (count > 0) {
             return CommonResult.success(count);
         }

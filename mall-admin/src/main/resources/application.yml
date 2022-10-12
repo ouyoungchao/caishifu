@@ -44,8 +44,8 @@ secure:
       - /favicon.ico
       - /actuator/**
       - /druid/**
-      - /admin/login
-      - /admin/register
+      - /caishifu/login
+      - /caishifu/register
       - /admin/info
       - /admin/logout
       - /minio/upload

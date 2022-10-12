@@ -3,6 +3,7 @@ package com.macro.mall.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -13,20 +14,30 @@ import javax.validation.constraints.NotEmpty;
  */
 @Getter
 @Setter
-public class UmsAdminParam {
-    @NotEmpty
-    @ApiModelProperty(value = "用户名", required = true)
-    private String username;
+@ToString
+public class User {
+
+    @ApiModelProperty(value = "用户id")
+    private String id;
+
     @NotEmpty
     @ApiModelProperty(value = "密码", required = true)
     private String password;
+    
     @ApiModelProperty(value = "用户头像")
     private String icon;
-    @Email
-    @ApiModelProperty(value = "邮箱")
-    private String email;
+
+    @NotEmpty
+    @ApiModelProperty(value = "电话")
+    private String telephone;
+
+    @NotEmpty
     @ApiModelProperty(value = "用户昵称")
     private String nickName;
+
     @ApiModelProperty(value = "备注")
     private String note;
+
+    @ApiModelProperty(value = "买家")
+    private String isBuyer;
 }

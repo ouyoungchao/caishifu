@@ -1,8 +1,8 @@
 package com.macro.mall.service;
 
-import com.macro.mall.dto.UmsAdminParam;
+import com.macro.mall.dto.User;
 import com.macro.mall.dto.UpdateAdminPasswordParam;
-import com.macro.mall.model.UmsAdmin;
+import com.macro.mall.model.UmsLoginInfo;
 import com.macro.mall.model.UmsResource;
 import com.macro.mall.model.UmsRole;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,12 +18,12 @@ public interface UmsAdminService {
     /**
      * 根据用户名获取后台管理员
      */
-    UmsAdmin getAdminByUsername(String username);
+    UmsLoginInfo getAdminByUsername(String username);
 
     /**
      * 注册功能
      */
-    UmsAdmin register(UmsAdminParam umsAdminParam);
+    UmsLoginInfo register(User user);
 
     /**
      * 登录功能
@@ -42,17 +42,17 @@ public interface UmsAdminService {
     /**
      * 根据用户id获取用户
      */
-    UmsAdmin getItem(Long id);
+    UmsLoginInfo getItem(Long id);
 
     /**
      * 根据用户名或昵称分页查询用户
      */
-    List<UmsAdmin> list(String keyword, Integer pageSize, Integer pageNum);
+    List<UmsLoginInfo> list(String keyword, Integer pageSize, Integer pageNum);
 
     /**
      * 修改指定用户信息
      */
-    int update(Long id, UmsAdmin admin);
+    int update(Long id, UmsLoginInfo admin);
 
     /**
      * 删除指定用户

@@ -1,6 +1,6 @@
 package com.macro.mall.demo.bo;
 
-import com.macro.mall.model.UmsAdmin;
+import com.macro.mall.model.UmsLoginInfo;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,10 +13,10 @@ import java.util.Collection;
  * Created by macro on 2018/4/26.
  */
 public class AdminUserDetails implements UserDetails {
-    private UmsAdmin umsAdmin;
+    private UmsLoginInfo umsLoginInfo;
 
-    public AdminUserDetails(UmsAdmin umsAdmin) {
-        this.umsAdmin = umsAdmin;
+    public AdminUserDetails(UmsLoginInfo umsLoginInfo) {
+        this.umsLoginInfo = umsLoginInfo;
     }
 
     @Override
@@ -27,12 +27,12 @@ public class AdminUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return umsAdmin.getPassword();
+        return umsLoginInfo.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return umsAdmin.getUsername();
+        return umsLoginInfo.getUsername();
     }
 
     @Override
