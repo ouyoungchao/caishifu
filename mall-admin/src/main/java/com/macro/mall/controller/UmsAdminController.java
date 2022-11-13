@@ -7,6 +7,7 @@ import com.macro.mall.common.api.CommonResult;
 import com.macro.mall.dto.UmsAdminLoginParam;
 import com.macro.mall.dto.User;
 import com.macro.mall.dto.UpdateAdminPasswordParam;
+import com.macro.mall.exception.UserException;
 import com.macro.mall.model.UmsLoginInfo;
 import com.macro.mall.model.UmsRole;
 import com.macro.mall.service.UmsAdminService;
@@ -54,11 +55,13 @@ public class UmsAdminController {
     @ResponseBody
     public ResponseEntity<CommonResult> register(@Validated @RequestBody User user) {
         LOGGER.debug("Register detais is " + user.toString());
-        UmsLoginInfo umsLoginInfo = adminService.register(user);
-        if (umsLoginInfo == null) {
-            return new ResponseEntity(CommonResult.failed(), HttpStatus.resolve((int) CommonResult.failed().getCode()));
+        try {
+            UmsLoginInfo umsLoginInfo = adminService.register(user);
+            return new ResponseEntity(CommonResult.success(umsLoginInfo),HttpStatus.OK);
+        }catch (UserException e){
+            LOGGER.error("Register user failed ",e);
+            return new ResponseEntity(e.getResultCode(), HttpStatus.resolve((int)e.getResultCode().getCode()));
         }
-        return new ResponseEntity(CommonResult.success(umsLoginInfo),HttpStatus.OK);
     }
 
     @ApiOperation(value = "登录以后返回token")

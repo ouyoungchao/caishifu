@@ -4,11 +4,13 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.PageHelper;
 import com.macro.mall.bo.AdminUserDetails;
+import com.macro.mall.common.api.ResultCode;
 import com.macro.mall.common.exception.Asserts;
 import com.macro.mall.common.util.RequestUtil;
 import com.macro.mall.dao.UmsAdminRoleRelationDao;
 import com.macro.mall.dto.User;
 import com.macro.mall.dto.UpdateAdminPasswordParam;
+import com.macro.mall.exception.UserException;
 import com.macro.mall.mapper.UmsAdminLoginLogMapper;
 import com.macro.mall.mapper.UmsAdminMapper;
 import com.macro.mall.mapper.UmsAdminRoleRelationMapper;
@@ -73,7 +75,7 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     }
 
     @Override
-    public UmsLoginInfo register(User user) {
+    public UmsLoginInfo register(User user) throws UserException {
         UmsLoginInfo umsLoginInfo = new UmsLoginInfo();
         BeanUtils.copyProperties(user, umsLoginInfo);
         umsLoginInfo.setCreateTime(new Date());
@@ -84,7 +86,7 @@ public class UmsAdminServiceImpl implements UmsAdminService {
         List<UmsLoginInfo> umsLoginInfoList = adminMapper.selectByExample(example);
         if (umsLoginInfoList.size() > 0) {
             LOGGER.warn("User " + user.getTelephone() + " has exist");
-            return null;
+            throw new UserException(ResultCode.REGISTER_FAILED_USER_EXIST);
         }
         //将密码进行加密操作
         String encodePassword = passwordEncoder.encode(umsLoginInfo.getPassword());

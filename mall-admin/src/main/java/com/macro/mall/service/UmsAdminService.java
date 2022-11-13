@@ -2,6 +2,7 @@ package com.macro.mall.service;
 
 import com.macro.mall.dto.User;
 import com.macro.mall.dto.UpdateAdminPasswordParam;
+import com.macro.mall.exception.UserException;
 import com.macro.mall.model.UmsLoginInfo;
 import com.macro.mall.model.UmsResource;
 import com.macro.mall.model.UmsRole;
@@ -21,9 +22,12 @@ public interface UmsAdminService {
     UmsLoginInfo getAdminByUsername(String username);
 
     /**
-     * 注册功能
+     * 用户注册
+     * @param user
+     * @return UmsLoginInfo 用户注册信息
+     * @throws UserException
      */
-    UmsLoginInfo register(User user);
+    UmsLoginInfo register(User user) throws UserException;
 
     /**
      * 登录功能
