@@ -1,7 +1,6 @@
 package com.macro.mall.controller;
 
 import cn.hutool.core.collection.CollUtil;
-import com.aliyun.oss.common.utils.HttpHeaders;
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
 import com.macro.mall.dto.UmsAdminLoginParam;
@@ -10,6 +9,7 @@ import com.macro.mall.dto.UpdateAdminPasswordParam;
 import com.macro.mall.exception.UserException;
 import com.macro.mall.model.UmsLoginInfo;
 import com.macro.mall.model.UmsRole;
+import com.macro.mall.model.UmsInfo;
 import com.macro.mall.service.UmsAdminService;
 import com.macro.mall.service.UmsRoleService;
 import io.swagger.annotations.Api;
@@ -57,10 +57,10 @@ public class UmsAdminController {
         LOGGER.debug("Register detais is " + user.toString());
         try {
             UmsLoginInfo umsLoginInfo = adminService.register(user);
-            return new ResponseEntity(CommonResult.success(umsLoginInfo),HttpStatus.OK);
-        }catch (UserException e){
+            return new ResponseEntity(CommonResult.success(new UmsInfo(umsLoginInfo)),HttpStatus.OK);
+        }catch (UserException e) {
             LOGGER.error("Register user failed ",e);
-            return new ResponseEntity(e.getResultCode(), HttpStatus.resolve((int)e.getResultCode().getCode()));
+            return new ResponseEntity(CommonResult.failed(e.getResultCode(),e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

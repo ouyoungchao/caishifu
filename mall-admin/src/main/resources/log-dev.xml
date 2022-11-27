@@ -31,6 +31,10 @@
 
     <!-- 日志输出级别 -->
     <logger name="org.springframework" level="INFO"/>
+    <logger name="org.apache">
+        <level value="INFO"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
     <logger name="com.macro.mall" level="INFO"/>
     <logger name="com" level="INFO"/>
     <root level="INFO">

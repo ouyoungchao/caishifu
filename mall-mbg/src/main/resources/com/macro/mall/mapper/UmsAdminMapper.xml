@@ -12,6 +12,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="login_time" jdbcType="TIMESTAMP" property="loginTime" />
     <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="is_buyer" jdbcType="INTEGER" property="isBuyer" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -110,11 +111,12 @@
     </selectKey>
     insert into ums_admin (username, password, icon, 
       telephone, nick_name, note,
-      create_time, login_time, status
+      create_time, login_time, status, is_buyer
       )
     values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, 
       #{telephone,jdbcType=VARCHAR}, #{nickName,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR},
-      #{createTime,jdbcType=TIMESTAMP}, #{loginTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}
+      #{createTime,jdbcType=TIMESTAMP}, #{loginTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER},
+      #{isBuyer, jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.macro.mall.model.UmsLoginInfo">

@@ -28,6 +28,8 @@ public class PmsDaoTests {
     @Autowired
     private PmsProductDao productDao;
     private static final Logger LOGGER = LoggerFactory.getLogger(PmsDaoTests.class);
+
+
     @Test
     @Transactional
     @Rollback

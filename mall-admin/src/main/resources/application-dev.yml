@@ -32,8 +32,8 @@ minio:
 
 ## 日志配置
 logging:
-  config:classpath:log-dev.xml
-  level.com.macro.mall=trace
+  config: classpath:log-dev.xml
+#  level.com.macro.mall=info
 
 logstash:
   host: localhost

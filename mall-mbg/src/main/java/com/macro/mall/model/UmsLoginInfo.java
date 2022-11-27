@@ -20,6 +20,9 @@ public class UmsLoginInfo implements Serializable {
     @ApiModelProperty(value = "昵称")
     private String nickName;
 
+    @ApiModelProperty
+    private int isBuyer;
+
     @ApiModelProperty(value = "备注信息")
     private String note;
 
@@ -112,6 +115,14 @@ public class UmsLoginInfo implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public int isBuyer() {
+        return isBuyer;
+    }
+
+    public void setBuyer(int buyer) {
+        isBuyer = buyer;
     }
 
     @Override

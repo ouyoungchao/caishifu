@@ -50,6 +50,7 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     private JwtTokenUtil jwtTokenUtil;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private UmsAdminMapper adminMapper;
     @Autowired

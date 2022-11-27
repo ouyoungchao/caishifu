@@ -39,5 +39,5 @@ public class User {
     private String note;
 
     @ApiModelProperty(value = "买家")
-    private String isBuyer;
+    private int isBuyer;
 }
