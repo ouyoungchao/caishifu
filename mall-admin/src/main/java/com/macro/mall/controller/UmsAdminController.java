@@ -3,6 +3,7 @@ package com.macro.mall.controller;
 import cn.hutool.core.collection.CollUtil;
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.ResultCode;
 import com.macro.mall.dto.UmsAdminLoginParam;
 import com.macro.mall.dto.User;
 import com.macro.mall.dto.UpdateAdminPasswordParam;
@@ -43,10 +44,13 @@ public class UmsAdminController {
 
     @Value("${jwt.tokenHeader}")
     private String tokenHeader;
+
     @Value("${jwt.tokenHead}")
     private String tokenHead;
+
     @Autowired
     private UmsAdminService adminService;
+
     @Autowired
     private UmsRoleService roleService;
 
@@ -57,25 +61,29 @@ public class UmsAdminController {
         LOGGER.debug("Register detais is " + user.toString());
         try {
             UmsLoginInfo umsLoginInfo = adminService.register(user);
-            return new ResponseEntity(CommonResult.success(new UmsInfo(umsLoginInfo)),HttpStatus.OK);
-        }catch (UserException e) {
-            LOGGER.error("Register user failed ",e);
-            return new ResponseEntity(CommonResult.failed(e.getResultCode(),e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity(CommonResult.success(new UmsInfo(umsLoginInfo)), HttpStatus.OK);
+        } catch (UserException e) {
+            LOGGER.error("Register user failed ", e);
+            return new ResponseEntity(CommonResult.failed(e.getResultCode(), e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @ApiOperation(value = "登录以后返回token")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult login(@Validated @RequestBody UmsAdminLoginParam umsAdminLoginParam) {
-        String token = adminService.login(umsAdminLoginParam.getUsername(), umsAdminLoginParam.getPassword());
+    public ResponseEntity<CommonResult> login(@RequestParam boolean verificationCode, @Validated @RequestBody User user) {
+        if (user == null) {
+            LOGGER.error("Login failed user == null");
+            return new ResponseEntity(CommonResult.failed(ResultCode.LOGIN_PARAM_INVALID), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        String token = adminService.login(user.getTelephone(), user.getPassword(), verificationCode);
         if (token == null) {
-            return CommonResult.validateFailed("用户名或密码错误");
+            return new ResponseEntity(CommonResult.failed(ResultCode.LOGIN_USERNAME_OR_PASSWOR_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
         tokenMap.put("tokenHead", tokenHead);
-        return CommonResult.success(tokenMap);
+        return new ResponseEntity(CommonResult.success(tokenMap), HttpStatus.OK);
     }
 
     @ApiOperation(value = "刷新token")
@@ -97,7 +105,7 @@ public class UmsAdminController {
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @ResponseBody
     public CommonResult getAdminInfo(Principal principal) {
-        if(principal==null){
+        if (principal == null) {
             return CommonResult.unauthorized(null);
         }
         String username = principal.getName();
@@ -107,9 +115,9 @@ public class UmsAdminController {
         data.put("menus", roleService.getMenuList(umsLoginInfo.getId()));
         data.put("icon", umsLoginInfo.getIcon());
         List<UmsRole> roleList = adminService.getRoleList(umsLoginInfo.getId());
-        if(CollUtil.isNotEmpty(roleList)){
+        if (CollUtil.isNotEmpty(roleList)) {
             List<String> roles = roleList.stream().map(UmsRole::getName).collect(Collectors.toList());
-            data.put("roles",roles);
+            data.put("roles", roles);
         }
         return CommonResult.success(data);
     }
@@ -182,7 +190,7 @@ public class UmsAdminController {
     @ApiOperation("修改帐号状态")
     @RequestMapping(value = "/updateStatus/{id}", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult updateStatus(@PathVariable Long id,@RequestParam(value = "status") Integer status) {
+    public CommonResult updateStatus(@PathVariable Long id, @RequestParam(value = "status") Integer status) {
         UmsLoginInfo umsLoginInfo = new UmsLoginInfo();
         umsLoginInfo.setStatus(status);
         int count = adminService.update(id, umsLoginInfo);

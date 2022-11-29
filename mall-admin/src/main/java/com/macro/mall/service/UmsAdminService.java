@@ -21,6 +21,8 @@ public interface UmsAdminService {
      */
     UmsLoginInfo getAdminByUsername(String username);
 
+    UmsLoginInfo getAdminByTelephone(String username);
+
     /**
      * 用户注册
      * @param user
@@ -35,7 +37,7 @@ public interface UmsAdminService {
      * @param password 密码
      * @return 生成的JWT的token
      */
-    String login(String username,String password);
+    String login(String username,String password, boolean useVerificationCode);
 
     /**
      * 刷新token的功能
