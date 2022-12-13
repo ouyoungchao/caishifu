@@ -1,7 +1,6 @@
-package com.macro.mall.exception;
+package com.macro.mall.common.exception;
 
 import com.macro.mall.common.api.ResultCode;
-import com.macro.mall.exception.CaiShiFuException;
 
 public class UserException extends CaiShiFuException {
     ResultCode resultCode;

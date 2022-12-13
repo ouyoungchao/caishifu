@@ -1,13 +1,21 @@
 package com.macro.mall.portal.controller;
 
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.ResultCode;
+import com.macro.mall.common.exception.UserException;
+import com.macro.mall.common.util.ValidateUtil;
 import com.macro.mall.model.UmsMember;
+import com.macro.mall.portal.service.MessageService;
 import com.macro.mall.portal.service.UmsMemberService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,46 +34,70 @@ import java.util.Map;
 @Controller
 @Api(tags = "UmsMemberController")
 @Tag(name = "UmsMemberController", description = "会员登录注册管理")
-@RequestMapping("/sso")
+@RequestMapping("/caishifu")
 public class UmsMemberController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UmsMemberController.class);
+
     @Value("${jwt.tokenHeader}")
     private String tokenHeader;
+
     @Value("${jwt.tokenHead}")
     private String tokenHead;
+
     @Autowired
     private UmsMemberService memberService;
 
+    @Autowired
+    private MessageService messageService;
+
     @ApiOperation("会员注册")
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @RequestMapping(value = "/sso/register", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult register(@RequestParam String username,
-                                 @RequestParam String password,
-                                 @RequestParam String telephone,
-                                 @RequestParam String authCode) {
-        memberService.register(username, password, telephone, authCode);
-        return CommonResult.success(null,"注册成功");
+    public ResponseEntity register(@RequestParam String nicName,
+                                   @RequestParam String password,
+                                   @RequestParam String telephone,
+                                   @RequestParam String authCode,
+                                   @RequestParam String isBuyer) {
+        //参数是否合法
+        if(!ValidateUtil.isValidChinesePhone(telephone) || (password.trim().isEmpty() || authCode.trim().isEmpty())){
+            return new ResponseEntity(CommonResult.failed(ResultCode.PARAM_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        try {
+            memberService.register(nicName, password, telephone, authCode, isBuyer);
+            return new ResponseEntity(CommonResult.success(ResultCode.REGISTER_USER_SUCCESS), HttpStatus.OK);
+        } catch (UserException e) {
+            LOGGER.error("Register user failed ", e);
+            return new ResponseEntity(CommonResult.failed(e.getResultCode(), e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @ApiOperation("会员登录")
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/sso/login", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult login(@RequestParam String username,
-                              @RequestParam String password) {
-        String token = memberService.login(username, password);
-        if (token == null) {
-            return CommonResult.validateFailed("用户名或密码错误");
+    public ResponseEntity login(@RequestParam String telephone,
+                              @RequestParam String password,
+                              @RequestParam String isAuthCode) {
+        if(!ValidateUtil.isValidChinesePhone(telephone)){
+            return new ResponseEntity(CommonResult.failed(ResultCode.PARAM_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        Map<String, String> tokenMap = new HashMap<>();
+        String token = null;
+        try {
+            token = memberService.login(telephone, password, Boolean.getBoolean(isAuthCode));
+
+        } catch (UserException e) {
+            return new ResponseEntity(CommonResult.failed(e.getResultCode()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        Map<String, Object> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
         tokenMap.put("tokenHead", tokenHead);
-        return CommonResult.success(tokenMap);
+        return new ResponseEntity(CommonResult.success(tokenMap,ResultCode.LOGIN_SUCCESS), HttpStatus.OK);
     }
 
     @ApiOperation("获取会员信息")
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @ResponseBody
     public CommonResult info(Principal principal) {
-        if(principal==null){
+        if (principal == null) {
             return CommonResult.unauthorized(null);
         }
         UmsMember member = memberService.getCurrentMember();
@@ -75,19 +107,26 @@ public class UmsMemberController {
     @ApiOperation("获取验证码")
     @RequestMapping(value = "/getAuthCode", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult getAuthCode(@RequestParam String telephone) {
-        String authCode = memberService.generateAuthCode(telephone);
-        return CommonResult.success(authCode,"获取验证码成功");
+    public ResponseEntity getAuthCode(@RequestParam String telephone) {
+        if(!ValidateUtil.isValidChinesePhone(telephone)){
+            return new ResponseEntity(CommonResult.failed(ResultCode.PARAM_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if(messageService.sendMessage(telephone)) {
+            return new ResponseEntity(CommonResult.success(null, ResultCode.VERIFICATION_GET_SUCCESS), HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity(CommonResult.failed( ResultCode.VERIFICATION_GET_FAILED), HttpStatus.OK);
+        }
     }
 
     @ApiOperation("会员修改密码")
     @RequestMapping(value = "/updatePassword", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult updatePassword(@RequestParam String telephone,
-                                 @RequestParam String password,
-                                 @RequestParam String authCode) {
-        memberService.updatePassword(telephone,password,authCode);
-        return CommonResult.success(null,"密码修改成功");
+                                       @RequestParam String password,
+                                       @RequestParam String authCode) {
+        memberService.updatePassword(telephone, password, authCode);
+        return CommonResult.success(null, "密码修改成功");
     }
 
 

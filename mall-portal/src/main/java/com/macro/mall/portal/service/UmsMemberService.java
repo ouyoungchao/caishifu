@@ -1,5 +1,6 @@
 package com.macro.mall.portal.service;
 
+import com.macro.mall.common.exception.UserException;
 import com.macro.mall.model.UmsMember;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +13,7 @@ public interface UmsMemberService {
     /**
      * 根据用户名获取会员
      */
-    UmsMember getByUsername(String username);
+    UmsMember getByTelephone(String telephone);
 
     /**
      * 根据会员编号获取会员
@@ -23,12 +24,8 @@ public interface UmsMemberService {
      * 用户注册
      */
     @Transactional
-    void register(String username, String password, String telephone, String authCode);
+    void register(String nicName, String password, String telephone, String authCode, String isBuyer) throws UserException;
 
-    /**
-     * 生成验证码
-     */
-    String generateAuthCode(String telephone);
 
     /**
      * 修改密码
@@ -50,12 +47,13 @@ public interface UmsMemberService {
     /**
      * 获取用户信息
      */
-    UserDetails loadUserByUsername(String username);
+    UserDetails loadUserByTelephone(String telephone);
+
 
     /**
      * 登录后获取token
      */
-    String login(String username, String password);
+    String login(String telephone, String password, boolean isAuthCode) throws UserException;
 
     /**
      * 刷新token

@@ -4,10 +4,10 @@ import cn.hutool.core.collection.CollUtil;
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
 import com.macro.mall.common.api.ResultCode;
+import com.macro.mall.common.exception.UserException;
 import com.macro.mall.dto.UmsAdminLoginParam;
 import com.macro.mall.dto.User;
 import com.macro.mall.dto.UpdateAdminPasswordParam;
-import com.macro.mall.exception.UserException;
 import com.macro.mall.model.UmsLoginInfo;
 import com.macro.mall.model.UmsRole;
 import com.macro.mall.model.UmsInfo;
@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -76,11 +77,13 @@ public class UmsAdminController {
             LOGGER.error("Login failed user == null");
             return new ResponseEntity(CommonResult.failed(ResultCode.LOGIN_PARAM_INVALID), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        String token = adminService.login(user.getTelephone(), user.getPassword(), verificationCode);
-        if (token == null) {
-            return new ResponseEntity(CommonResult.failed(ResultCode.LOGIN_USERNAME_OR_PASSWOR_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        String token = null;
+        try {
+            token = adminService.login(user.getTelephone(), user.getPassword(), verificationCode);
+        } catch (UserException e){
+            return new ResponseEntity(CommonResult.failed(e.getResultCode()),HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        Map<String, String> tokenMap = new HashMap<>();
+        Map<String, Object> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
         tokenMap.put("tokenHead", tokenHead);
         return new ResponseEntity(CommonResult.success(tokenMap), HttpStatus.OK);

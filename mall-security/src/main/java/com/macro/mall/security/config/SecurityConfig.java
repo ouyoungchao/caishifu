@@ -33,8 +33,10 @@ public class SecurityConfig {
     private RestfulAccessDeniedHandler restfulAccessDeniedHandler;
     @Autowired
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
     @Autowired
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+
     @Autowired(required = false)
     private DynamicSecurityService dynamicSecurityService;
     @Autowired(required = false)

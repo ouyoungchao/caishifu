@@ -15,7 +15,13 @@ public interface UmsMemberCacheService {
     /**
      * 获取会员用户缓存
      */
-    UmsMember getMember(String username);
+    UmsMember getMemberByUserName(String username);
+
+
+    /**
+     * 获取会员用户缓存
+     */
+    UmsMember getMemberByTelephone(String telephone);
 
     /**
      * 设置会员用户缓存

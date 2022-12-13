@@ -31,7 +31,6 @@ public class User {
     @ApiModelProperty(value = "电话")
     private String telephone;
 
-    @NotEmpty
     @ApiModelProperty(value = "用户昵称")
     private String nickName;
 

@@ -8,6 +8,7 @@
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="nickname" jdbcType="VARCHAR" property="nickname" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="isBuyer" jdbcType="VARCHAR" property="isBuyer" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="icon" jdbcType="VARCHAR" property="icon" />
@@ -80,11 +81,13 @@
       </foreach>
     </where>
   </sql>
+
   <sql id="Base_Column_List">
-    id, member_level_id, username, password, nickname, phone, status, create_time, icon, 
+    id, member_level_id, username, password, nickname, phone, isBuyer, status, create_time, icon,
     gender, birthday, city, job, personalized_signature, source_type, integration, growth, 
     luckey_count, history_integration
   </sql>
+
   <select id="selectByExample" parameterType="com.macro.mall.model.UmsMemberExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
@@ -120,13 +123,13 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into ums_member (member_level_id, username, password, 
-      nickname, phone, status, 
+      nickname, phone, isBuyer, status,
       create_time, icon, gender, 
       birthday, city, job, personalized_signature, 
       source_type, integration, growth, 
       luckey_count, history_integration)
     values (#{memberLevelId,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{nickname,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{nickname,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{isBuyer,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{icon,jdbcType=VARCHAR}, #{gender,jdbcType=INTEGER}, 
       #{birthday,jdbcType=DATE}, #{city,jdbcType=VARCHAR}, #{job,jdbcType=VARCHAR}, #{personalizedSignature,jdbcType=VARCHAR}, 
       #{sourceType,jdbcType=INTEGER}, #{integration,jdbcType=INTEGER}, #{growth,jdbcType=INTEGER}, 

@@ -46,6 +46,10 @@ public class CommonResult<T> {
         return new CommonResult<T>(ResultCode.SUCCESS.getCode(), message, data);
     }
 
+    public static <T> CommonResult<T> success(T data, ResultCode resultCode) {
+        return new CommonResult<T>(resultCode.getCode(), resultCode.getMessage(), data);
+    }
+
     /**
      * 失败返回结果
      * @param errorCode 错误码

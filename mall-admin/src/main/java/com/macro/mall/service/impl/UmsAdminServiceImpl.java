@@ -6,12 +6,12 @@ import com.github.pagehelper.PageHelper;
 import com.macro.mall.bo.AdminUserDetails;
 import com.macro.mall.common.api.ResultCode;
 import com.macro.mall.common.exception.Asserts;
+import com.macro.mall.common.exception.UserException;
 import com.macro.mall.common.service.RedisService;
 import com.macro.mall.common.util.RequestUtil;
 import com.macro.mall.dao.UmsAdminRoleRelationDao;
 import com.macro.mall.dto.User;
 import com.macro.mall.dto.UpdateAdminPasswordParam;
-import com.macro.mall.exception.UserException;
 import com.macro.mall.mapper.UmsAdminLoginLogMapper;
 import com.macro.mall.mapper.UmsAdminMapper;
 import com.macro.mall.mapper.UmsAdminRoleRelationMapper;
@@ -85,27 +85,13 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     }
 
     @Override
-    public UmsLoginInfo getAdminByTelephone(String telephone) {
-        UmsLoginInfo admin = getCacheService().getAdmin(telephone);
-        if (admin != null) return admin;
-        UmsAdminExample example = new UmsAdminExample();
-        example.createCriteria().andTelephoneEqualTo(telephone);
-        List<UmsLoginInfo> adminList = adminMapper.selectByExample(example);
-        if (adminList != null && adminList.size() > 0) {
-            admin = adminList.get(0);
-            getCacheService().setAdmin(admin);
-            return admin;
-        }
-        return null;
-    }
-
-    @Override
     public UmsLoginInfo register(User user) throws UserException {
         UmsLoginInfo umsLoginInfo = new UmsLoginInfo();
         BeanUtils.copyProperties(user, umsLoginInfo);
+        umsLoginInfo.setUsername(user.getTelephone());
         umsLoginInfo.setCreateTime(new Date());
         umsLoginInfo.setStatus(1);
-        //查询是否有相同用户名的用户
+        //查询该电话号码是否注册过
         UmsAdminExample example = new UmsAdminExample();
         example.createCriteria().andTelephoneEqualTo(umsLoginInfo.getTelephone());
         List<UmsLoginInfo> umsLoginInfoList = adminMapper.selectByExample(example);
@@ -121,16 +107,19 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     }
 
     @Override
-    public String login(String username, String password, boolean useVerificationCode) {
+    public String login(String username, String password, boolean useVerificationCode) throws UserException {
         String token = null;
         //密码需要客户端加密后传递
         try {
+            //获取用户信息
             UserDetails userDetails = loadUserByUsername(username);
-            if (!passwordEncoder.matches(passwordEncoder.encode(password), userDetails.getPassword())) {
-                Asserts.fail("密码不正确");
+            if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+                LOGGER.warn(username + "密码不正确");
+                throw new UserException(ResultCode.LOGIN_USERNAME_OR_PASSWOR_ERROR);
             }
             if (!userDetails.isEnabled()) {
-                Asserts.fail("帐号已被禁用");
+                LOGGER.warn(username + "帐号已被禁用");
+                throw new UserException(ResultCode.LOGIN_USERNAME_IS_FIRBIDDEN);
             }
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -139,6 +128,7 @@ public class UmsAdminServiceImpl implements UmsAdminService {
             insertLoginLog(username);
         } catch (AuthenticationException e) {
             LOGGER.warn("登录异常:{}", e.getMessage());
+            throw new UserException(ResultCode.LOGIN_ERROR);
         }
         return token;
     }
@@ -287,7 +277,7 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     @Override
     public UserDetails loadUserByUsername(String username) {
         //获取用户信息
-        UmsLoginInfo admin = getAdminByTelephone(username);
+        UmsLoginInfo admin = getAdminByUsername(username);
         if (admin != null) {
             List<UmsResource> resourceList = getResourceList(admin.getId());
             return new AdminUserDetails(admin, resourceList);

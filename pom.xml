@@ -45,12 +45,15 @@
         <mysql-connector.version>8.0.29</mysql-connector.version>
         <spring-data-commons.version>2.7.0</spring-data-commons.version>
         <jjwt.version>0.9.1</jjwt.version>
+        <jaxb.version>2.3.0</jaxb.version>
         <aliyun-oss.version>2.5.0</aliyun-oss.version>
+        <aliyun-alibabacloud-dysmsapi.version>2.0.22</aliyun-alibabacloud-dysmsapi.version>
         <logstash-logback.version>7.2</logstash-logback.version>
         <minio.version>8.4.1</minio.version>
         <mall-common.version>1.0-SNAPSHOT</mall-common.version>
         <mall-mbg.version>1.0-SNAPSHOT</mall-mbg.version>
         <mall-security.version>1.0-SNAPSHOT</mall-security.version>
+        
     </properties>
 
     <dependencies>
