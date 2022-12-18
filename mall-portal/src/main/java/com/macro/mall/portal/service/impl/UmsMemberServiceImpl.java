@@ -42,6 +42,7 @@ import java.util.Random;
 @Service
 public class UmsMemberServiceImpl implements UmsMemberService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UmsMemberServiceImpl.class);
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -50,8 +51,10 @@ public class UmsMemberServiceImpl implements UmsMemberService {
 
     @Autowired
     private UmsMemberMapper memberMapper;
+
     @Autowired
     private UmsMemberLevelMapper memberLevelMapper;
+
     @Autowired
     private UmsMemberCacheService memberCacheService;
 
@@ -66,10 +69,11 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         UmsMember member = memberCacheService.getMemberByTelephone(telephone);
         if (member != null) return member;
         UmsMemberExample example = new UmsMemberExample();
-        example.createCriteria().andUsernameEqualTo(telephone);
+        example.createCriteria().andPhoneEqualTo(telephone);
         List<UmsMember> memberList = memberMapper.selectByExample(example);
         if (!CollectionUtils.isEmpty(memberList)) {
             member = memberList.get(0);
+            member.setUsername(telephone);
             memberCacheService.setMember(member);
             return member;
         }
@@ -162,9 +166,6 @@ public class UmsMemberServiceImpl implements UmsMemberService {
 
     @Override
     public String login(String telephone, String password, boolean isAuthCode) throws UserException {
-        if (!ValidateUtil.isValidChinesePhone(telephone)) {
-
-        }
         //验证验证码
         if (isAuthCode) {
             if (!verifyAuthCode(password, telephone)) {

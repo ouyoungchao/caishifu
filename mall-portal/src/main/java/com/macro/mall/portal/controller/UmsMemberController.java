@@ -2,6 +2,7 @@ package com.macro.mall.portal.controller;
 
 import com.macro.mall.common.api.CommonResult;
 import com.macro.mall.common.api.ResultCode;
+import com.macro.mall.common.exception.CaiShiFuException;
 import com.macro.mall.common.exception.UserException;
 import com.macro.mall.common.util.ValidateUtil;
 import com.macro.mall.model.UmsMember;
@@ -90,7 +91,7 @@ public class UmsMemberController {
         Map<String, Object> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
         tokenMap.put("tokenHead", tokenHead);
-        return new ResponseEntity(CommonResult.success(tokenMap,ResultCode.LOGIN_SUCCESS), HttpStatus.OK);
+        return new ResponseEntity(CommonResult.success(tokenMap, ResultCode.LOGIN_SUCCESS), HttpStatus.OK);
     }
 
     @ApiOperation("获取会员信息")
@@ -111,10 +112,12 @@ public class UmsMemberController {
         if(!ValidateUtil.isValidChinesePhone(telephone)){
             return new ResponseEntity(CommonResult.failed(ResultCode.PARAM_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        if(messageService.sendMessage(telephone)) {
-            return new ResponseEntity(CommonResult.success(null, ResultCode.VERIFICATION_GET_SUCCESS), HttpStatus.OK);
-        }
-        else {
+        try{
+            if(messageService.sendMessage(telephone)) {
+                return new ResponseEntity(CommonResult.success(null, ResultCode.VERIFICATION_GET_SUCCESS), HttpStatus.OK);
+            }
+            return new ResponseEntity(CommonResult.failed( ResultCode.VERIFICATION_GET_FAILED), HttpStatus.OK);
+        } catch (CaiShiFuException e){
             return new ResponseEntity(CommonResult.failed( ResultCode.VERIFICATION_GET_FAILED), HttpStatus.OK);
         }
     }

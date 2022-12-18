@@ -32,8 +32,8 @@ secure:
       - /favicon.ico
       - /druid/**
       - /actuator/**
-      - /caishifu/sso/register
-      - /caishifu/sso/login
+      - /caishifu/sso/**
+      - /caishifu/getAuthCode
       - /home/**
       - /product/**
       - /brand/**
@@ -50,9 +50,10 @@ redis:
     common: 86400 # 24小时
 
 sms:
-  accessKey: 'AccessKey Secret'
-  accessKeySecret: 'YM580zAXK79P8zSAfd9XRpmbma0EYq'
+  accessKey: 'TFRBSTV0Q1ZxdzVxRmJHdFFHUlpiUlNv'
+  accessKeySecret: 'WU01ODB6QVhLNzlQOHpTQWZkOVhScG1ibWEwRVlx'
   aliyuncsDomain: 'dysmsapi.aliyuncs.com'
+  signname: '太原隆玺科技'
   templateCode: 'SMS_218287437'
 # 消息队列定义
 rabbitmq:
