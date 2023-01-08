@@ -21,9 +21,6 @@ public class UmsMember implements Serializable {
     @ApiModelProperty(value = "手机号码")
     private String phone;
 
-    @ApiModelProperty(value = "买家")
-    private String isBuyer;
-
     @ApiModelProperty(value = "帐号启用状态:0->禁用；1->启用")
     private Integer status;
 
@@ -62,6 +59,8 @@ public class UmsMember implements Serializable {
 
     @ApiModelProperty(value = "历史积分数量")
     private Integer historyIntegration;
+
+    private String isbuyer;
 
     private static final long serialVersionUID = 1L;
 
@@ -217,12 +216,12 @@ public class UmsMember implements Serializable {
         this.historyIntegration = historyIntegration;
     }
 
-    public String getIsBuyer() {
-        return isBuyer;
+    public String getIsbuyer() {
+        return isbuyer;
     }
 
-    public void setIsBuyer(String isBuyer) {
-        this.isBuyer = isBuyer;
+    public void setIsbuyer(String isbuyer) {
+        this.isbuyer = isbuyer;
     }
 
     @Override
@@ -237,7 +236,6 @@ public class UmsMember implements Serializable {
         sb.append(", password=").append(password);
         sb.append(", nickname=").append(nickname);
         sb.append(", phone=").append(phone);
-        sb.append(", isBuyer").append(isBuyer);
         sb.append(", status=").append(status);
         sb.append(", createTime=").append(createTime);
         sb.append(", icon=").append(icon);
@@ -251,6 +249,7 @@ public class UmsMember implements Serializable {
         sb.append(", growth=").append(growth);
         sb.append(", luckeyCount=").append(luckeyCount);
         sb.append(", historyIntegration=").append(historyIntegration);
+        sb.append(", isbuyer=").append(isbuyer);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

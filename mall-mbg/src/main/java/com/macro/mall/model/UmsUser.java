@@ -1,13 +1,15 @@
-package com.shiliu.caishifu.model;
+package com.macro.mall.model;
 
-import com.alibaba.fastjson.JSON;
-import com.orm.SugarRecord;
 
+import cn.hutool.json.JSON;
+import cn.hutool.json.ObjectMapper;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class User extends SugarRecord {
+public class UmsUser implements Serializable {
 
     /**
      * 用户id
@@ -45,6 +47,8 @@ public class User extends SugarRecord {
      * 是否为买家
      */
     private String isBuyer;
+
+    private int status;
 
     /**
      *
@@ -102,7 +106,7 @@ public class User extends SugarRecord {
     /**
      * 联系人列表
      */
-    private List<User> contactList;
+    private List<UmsUser> contactList;
 
     /**
      * 用户微信名称修改
@@ -337,11 +341,11 @@ public class User extends SugarRecord {
         this.isFriend = isFriend;
     }
 
-    public List<User> getContactList() {
+    public List<UmsUser> getContactList() {
         return contactList;
     }
 
-    public void setContactList(List<User> contactList) {
+    public void setContactList(List<UmsUser> contactList) {
         this.contactList = contactList;
     }
 
@@ -441,10 +445,18 @@ public class User extends SugarRecord {
         this.userContactTags = userContactTags;
     }
 
-    public List<String> getUserContactTagList() {
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    /* public List<String> getUserContactTagList() {
         List<String> userContactTagList;
         try {
-            userContactTagList = JSON.parseArray(this.userContactTags, String.class);
+            userContactTagList = ObjectMapper.parseArray(this.userContactTags, String.class);
             if (null == userContactTagList) {
                 userContactTagList = new ArrayList<>();
             }
@@ -452,7 +464,7 @@ public class User extends SugarRecord {
             userContactTagList = new ArrayList<>();
         }
         return userContactTagList;
-    }
+    }*/
 
     public void setUserContactTagList(List<String> userContactTagList) {
         this.userContactTagList = userContactTagList;
@@ -467,15 +479,15 @@ public class User extends SugarRecord {
     }
 
     public List<String> getUserTagList() {
-        List<String> userTagList;
-        try {
+        List<String> userTagList = null;
+        /*try {
             userTagList = JSON.parseArray(this.userTags, String.class);
             if (null == userTagList) {
                 userTagList = new ArrayList<>();
             }
         } catch (Exception e) {
             userTagList = new ArrayList<>();
-        }
+        }*/
         return userTagList;
     }
 
@@ -494,7 +506,7 @@ public class User extends SugarRecord {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        User other = (User) obj;
+        UmsUser other = (UmsUser) obj;
         if (!userId.equals(other.getUserId())) {
             return false;
         }

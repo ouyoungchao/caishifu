@@ -19,7 +19,7 @@
  * 
  */
 
-package com.macro.mall.portal.service.thirdparty;
+package com.macro.mall.portal.service.impl;
 
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
@@ -27,6 +27,7 @@ import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
+import com.macro.mall.portal.service.OssService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

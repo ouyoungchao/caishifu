@@ -1,11 +1,12 @@
-package com.shiliu.dragon.utils.utils;
+package com.macro.mall.common.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
 
 public class JsonUtil {
 
@@ -36,6 +37,22 @@ public class JsonUtil {
         try {
             //字符串转Json对象
             return objectMap.readValue(content, valueType);
+        } catch (Exception e) {
+            logger.error("Json to object error",e);
+        }
+        return null;
+    }
+
+    public static <T> T readValue(InputStream inputStream, Class<T> valueType) {
+        if (objectMap == null) {
+            objectMap = new ObjectMapper();
+        }
+        if(inputStream == null){
+            return null;
+        }
+        try {
+            //字符串转Json对象
+            return objectMap.readValue(inputStream, valueType);
         } catch (Exception e) {
             logger.error("Json to object error",e);
         }

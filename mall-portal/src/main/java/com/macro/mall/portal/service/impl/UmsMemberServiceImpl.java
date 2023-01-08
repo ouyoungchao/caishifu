@@ -3,23 +3,21 @@ package com.macro.mall.portal.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.macro.mall.common.api.ResultCode;
 import com.macro.mall.common.exception.Asserts;
+import com.macro.mall.common.exception.CaiShiFuException;
 import com.macro.mall.common.exception.UserException;
-import com.macro.mall.common.util.ValidateUtil;
 import com.macro.mall.mapper.UmsMemberLevelMapper;
 import com.macro.mall.mapper.UmsMemberMapper;
-import com.macro.mall.model.UmsMember;
-import com.macro.mall.model.UmsMemberExample;
-import com.macro.mall.model.UmsMemberLevel;
-import com.macro.mall.model.UmsMemberLevelExample;
+import com.macro.mall.model.*;
 import com.macro.mall.portal.domain.MemberDetails;
 import com.macro.mall.portal.service.UmsMemberCacheService;
 import com.macro.mall.portal.service.UmsMemberService;
+import com.macro.mall.portal.service.OssService;
 import com.macro.mall.security.util.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -30,10 +28,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 /**
  * 会员管理Service实现类
@@ -58,11 +57,17 @@ public class UmsMemberServiceImpl implements UmsMemberService {
     @Autowired
     private UmsMemberCacheService memberCacheService;
 
+    @Autowired
+    private OssService ossService;
+
     @Value("${redis.key.authCode}")
     private String REDIS_KEY_PREFIX_AUTH_CODE;
 
     @Value("${redis.expire.authCode}")
     private Long AUTH_CODE_EXPIRE_SECONDS;
+
+    @Value("${oss.bucket.useravatar}")
+    private String OSS_BUCKET_USERAVATAR;
 
     @Override
     public UmsMember getByTelephone(String telephone) {
@@ -105,7 +110,7 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         umsMember.setNickname(nicName);
         umsMember.setPhone(telephone);
         umsMember.setPassword(passwordEncoder.encode(password));
-        umsMember.setIsBuyer(isBuyer);
+        umsMember.setIsbuyer(isBuyer);
         umsMember.setCreateTime(new Date());
         umsMember.setStatus(1);
         //获取默认会员等级并设置
@@ -138,6 +143,33 @@ public class UmsMemberServiceImpl implements UmsMemberService {
     }
 
     @Override
+    public UmsMember updateMember(UmsMember member, MultipartFile file, String token) throws UserException {
+        String telephone = jwtTokenUtil.getUserNameFromToken(token);
+        if(member == null){
+            member = new UmsMember();
+        }
+        if (file != null) {
+            if (!(file.getOriginalFilename().endsWith(".jpg") || file.getOriginalFilename().endsWith(".png"))) {
+                LOGGER.warn("Upload file is error {}", file);
+                throw new UserException(ResultCode.USERINFO_UPDATE_AVATAR_SUFFIX_ERROR);
+            }
+            String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."), file.getOriginalFilename().length());
+            String fileName = telephone + (new Date().getTime()) + suffix;
+            LOGGER.info("upload file " + file.getOriginalFilename());
+            try {
+                String url = ossService.uploadFile(OSS_BUCKET_USERAVATAR, fileName, file.getInputStream());
+                member.setIcon(url);
+            } catch (IOException e) {
+                throw new UserException(ResultCode.USERINFO_UPDATE_AVATAR_CONTENT_ERROR);
+            }
+        }
+        UmsMemberExample example = new UmsMemberExample();
+        example.createCriteria().andPhoneEqualTo(telephone);
+        memberMapper.updateByExampleSelective(member,example);
+        return getByTelephone(telephone);
+    }
+
+    @Override
     public UmsMember getCurrentMember() {
         SecurityContext ctx = SecurityContextHolder.getContext();
         Authentication auth = ctx.getAuthentication();
@@ -161,6 +193,19 @@ public class UmsMemberServiceImpl implements UmsMemberService {
             return new MemberDetails(member);
         }
         throw new UsernameNotFoundException("用户名或密码错误");
+    }
+
+    @Override
+    public UmsUser loadUserByToken(String token) throws UserException {
+        String telephone = jwtTokenUtil.getUserNameFromToken(token);
+        try {
+            MemberDetails member = (MemberDetails) loadUserByTelephone(telephone);
+            UmsUser user = new UmsUser();
+            copyMemberToUser(member.getUmsMember(), user);
+            return user;
+        } catch (AuthenticationException e) {
+            throw new UserException(ResultCode.USERINFO_GET_FAILED);
+        }
     }
 
 
@@ -202,6 +247,16 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         }
         String realAuthCode = memberCacheService.getAuthCode(telephone);
         return authCode.equals(realAuthCode);
+    }
+
+    private void copyMemberToUser(UmsMember member, UmsUser user) {
+        BeanUtils.copyProperties(member, user);
+        user.setUserId(member.getId().toString());
+        user.setUserAvatar(member.getIcon());
+        user.setUserNickName(member.getNickname());
+        user.setIsBuyer(member.getIsbuyer());
+        user.setUserPhone(member.getPhone());
+        user.setStatus(member.getStatus());
     }
 
 }

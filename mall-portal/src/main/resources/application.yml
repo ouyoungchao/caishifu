@@ -55,6 +55,15 @@ sms:
   aliyuncsDomain: 'dysmsapi.aliyuncs.com'
   signname: '太原隆玺科技'
   templateCode: 'SMS_218287437'
+
+
+oss:
+  accessKey: 'TFRBSTV0Q1ZxdzVxRmJHdFFHUlpiUlNv'
+  accessKeySecret: 'WU01ODB6QVhLNzlQOHpTQWZkOVhScG1ibWEwRVlx'
+  aliyunosEndPoint: 'oss-cn-guangzhou.aliyuncs.com'
+  bucket:
+    useravatar: 'caishifu-useravatar'
+
 # 消息队列定义
 rabbitmq:
   queue:

@@ -1351,6 +1351,76 @@ public class UmsMemberExample {
             addCriterion("history_integration not between", value1, value2, "historyIntegration");
             return (Criteria) this;
         }
+
+        public Criteria andIsbuyerIsNull() {
+            addCriterion("isBuyer is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsbuyerIsNotNull() {
+            addCriterion("isBuyer is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsbuyerEqualTo(String value) {
+            addCriterion("isBuyer =", value, "isbuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsbuyerNotEqualTo(String value) {
+            addCriterion("isBuyer <>", value, "isbuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsbuyerGreaterThan(String value) {
+            addCriterion("isBuyer >", value, "isbuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsbuyerGreaterThanOrEqualTo(String value) {
+            addCriterion("isBuyer >=", value, "isbuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsbuyerLessThan(String value) {
+            addCriterion("isBuyer <", value, "isbuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsbuyerLessThanOrEqualTo(String value) {
+            addCriterion("isBuyer <=", value, "isbuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsbuyerLike(String value) {
+            addCriterion("isBuyer like", value, "isbuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsbuyerNotLike(String value) {
+            addCriterion("isBuyer not like", value, "isbuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsbuyerIn(List<String> values) {
+            addCriterion("isBuyer in", values, "isbuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsbuyerNotIn(List<String> values) {
+            addCriterion("isBuyer not in", values, "isbuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsbuyerBetween(String value1, String value2) {
+            addCriterion("isBuyer between", value1, value2, "isbuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsbuyerNotBetween(String value1, String value2) {
+            addCriterion("isBuyer not between", value1, value2, "isbuyer");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

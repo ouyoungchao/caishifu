@@ -2,8 +2,14 @@ package com.macro.mall.portal.service;
 
 import com.macro.mall.common.exception.UserException;
 import com.macro.mall.model.UmsMember;
+import com.macro.mall.model.UmsUser;
+import com.macro.mall.portal.domain.MemberDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 会员管理Service
@@ -33,6 +39,9 @@ public interface UmsMemberService {
     @Transactional
     void updatePassword(String telephone, String password, String authCode);
 
+    @Transactional
+    UmsMember updateMember(UmsMember member, MultipartFile file, String token) throws UserException;
+
     /**
      * 获取当前登录会员
      */
@@ -48,6 +57,11 @@ public interface UmsMemberService {
      * 获取用户信息
      */
     UserDetails loadUserByTelephone(String telephone);
+
+    /**
+     * 获取用户信息
+     */
+    UmsUser loadUserByToken(String token) throws UserException;
 
 
     /**

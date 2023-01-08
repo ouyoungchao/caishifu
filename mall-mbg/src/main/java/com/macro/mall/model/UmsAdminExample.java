@@ -180,11 +180,6 @@ public class UmsAdminExample {
             return (Criteria) this;
         }
 
-        public Criteria andTelephoneEqualTo(String value) {
-            addCriterion("telephone =", value, "telephone");
-            return (Criteria) this;
-        }
-
         public Criteria andUsernameNotEqualTo(String value) {
             addCriterion("username <>", value, "username");
             return (Criteria) this;
@@ -380,73 +375,73 @@ public class UmsAdminExample {
             return (Criteria) this;
         }
 
-        public Criteria andEmailIsNull() {
-            addCriterion("email is null");
+        public Criteria andTelephoneIsNull() {
+            addCriterion("telephone is null");
             return (Criteria) this;
         }
 
-        public Criteria andEmailIsNotNull() {
-            addCriterion("email is not null");
+        public Criteria andTelephoneIsNotNull() {
+            addCriterion("telephone is not null");
             return (Criteria) this;
         }
 
-        public Criteria andEmailEqualTo(String value) {
-            addCriterion("email =", value, "email");
+        public Criteria andTelephoneEqualTo(String value) {
+            addCriterion("telephone =", value, "telephone");
             return (Criteria) this;
         }
 
-        public Criteria andEmailNotEqualTo(String value) {
-            addCriterion("email <>", value, "email");
+        public Criteria andTelephoneNotEqualTo(String value) {
+            addCriterion("telephone <>", value, "telephone");
             return (Criteria) this;
         }
 
-        public Criteria andEmailGreaterThan(String value) {
-            addCriterion("email >", value, "email");
+        public Criteria andTelephoneGreaterThan(String value) {
+            addCriterion("telephone >", value, "telephone");
             return (Criteria) this;
         }
 
-        public Criteria andEmailGreaterThanOrEqualTo(String value) {
-            addCriterion("email >=", value, "email");
+        public Criteria andTelephoneGreaterThanOrEqualTo(String value) {
+            addCriterion("telephone >=", value, "telephone");
             return (Criteria) this;
         }
 
-        public Criteria andEmailLessThan(String value) {
-            addCriterion("email <", value, "email");
+        public Criteria andTelephoneLessThan(String value) {
+            addCriterion("telephone <", value, "telephone");
             return (Criteria) this;
         }
 
-        public Criteria andEmailLessThanOrEqualTo(String value) {
-            addCriterion("email <=", value, "email");
+        public Criteria andTelephoneLessThanOrEqualTo(String value) {
+            addCriterion("telephone <=", value, "telephone");
             return (Criteria) this;
         }
 
-        public Criteria andEmailLike(String value) {
-            addCriterion("email like", value, "email");
+        public Criteria andTelephoneLike(String value) {
+            addCriterion("telephone like", value, "telephone");
             return (Criteria) this;
         }
 
-        public Criteria andEmailNotLike(String value) {
-            addCriterion("email not like", value, "email");
+        public Criteria andTelephoneNotLike(String value) {
+            addCriterion("telephone not like", value, "telephone");
             return (Criteria) this;
         }
 
-        public Criteria andEmailIn(List<String> values) {
-            addCriterion("email in", values, "email");
+        public Criteria andTelephoneIn(List<String> values) {
+            addCriterion("telephone in", values, "telephone");
             return (Criteria) this;
         }
 
-        public Criteria andEmailNotIn(List<String> values) {
-            addCriterion("email not in", values, "email");
+        public Criteria andTelephoneNotIn(List<String> values) {
+            addCriterion("telephone not in", values, "telephone");
             return (Criteria) this;
         }
 
-        public Criteria andEmailBetween(String value1, String value2) {
-            addCriterion("email between", value1, value2, "email");
+        public Criteria andTelephoneBetween(String value1, String value2) {
+            addCriterion("telephone between", value1, value2, "telephone");
             return (Criteria) this;
         }
 
-        public Criteria andEmailNotBetween(String value1, String value2) {
-            addCriterion("email not between", value1, value2, "email");
+        public Criteria andTelephoneNotBetween(String value1, String value2) {
+            addCriterion("telephone not between", value1, value2, "telephone");
             return (Criteria) this;
         }
 
@@ -767,6 +762,66 @@ public class UmsAdminExample {
 
         public Criteria andStatusNotBetween(Integer value1, Integer value2) {
             addCriterion("status not between", value1, value2, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsBuyerIsNull() {
+            addCriterion("is_buyer is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsBuyerIsNotNull() {
+            addCriterion("is_buyer is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsBuyerEqualTo(Integer value) {
+            addCriterion("is_buyer =", value, "isBuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsBuyerNotEqualTo(Integer value) {
+            addCriterion("is_buyer <>", value, "isBuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsBuyerGreaterThan(Integer value) {
+            addCriterion("is_buyer >", value, "isBuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsBuyerGreaterThanOrEqualTo(Integer value) {
+            addCriterion("is_buyer >=", value, "isBuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsBuyerLessThan(Integer value) {
+            addCriterion("is_buyer <", value, "isBuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsBuyerLessThanOrEqualTo(Integer value) {
+            addCriterion("is_buyer <=", value, "isBuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsBuyerIn(List<Integer> values) {
+            addCriterion("is_buyer in", values, "isBuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsBuyerNotIn(List<Integer> values) {
+            addCriterion("is_buyer not in", values, "isBuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsBuyerBetween(Integer value1, Integer value2) {
+            addCriterion("is_buyer between", value1, value2, "isBuyer");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsBuyerNotBetween(Integer value1, Integer value2) {
+            addCriterion("is_buyer not between", value1, value2, "isBuyer");
             return (Criteria) this;
         }
     }

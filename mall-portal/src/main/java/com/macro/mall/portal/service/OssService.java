@@ -1,4 +1,4 @@
-package com.macro.mall.portal.service.thirdparty;
+package com.macro.mall.portal.service;
 
 import java.io.InputStream;
 
