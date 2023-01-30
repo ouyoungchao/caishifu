@@ -147,7 +147,7 @@ public class UmsMemberController {
     @RequestMapping(value = "/refreshToken", method = RequestMethod.GET)
     @ResponseBody
     public CommonResult refreshToken(HttpServletRequest request) {
-        String token = request.getHeader(tokenHeader);
+        String token = request.getHeader(tokenHeader).substring(tokenHead.length());
         String refreshToken = memberService.refreshToken(token);
         if (refreshToken == null) {
             return CommonResult.failed("token已经过期！");
@@ -162,22 +162,26 @@ public class UmsMemberController {
     @RequestMapping(value = "/updateMember", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity updateMember(HttpServletRequest request) {
-        String token = request.getHeader(tokenHeader);
+        String token = request.getHeader(tokenHeader).substring(tokenHead.length());
         try {
+            List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles("file");
             //获取用户信息
-            UmsMember member = JsonUtil.readValue(request.getPart("member").getInputStream(), UmsMember.class);
-            MultipartFile file = ((MultipartHttpServletRequest) request).getFile("file");
-            if (member == null && file == null) {
+            UmsUser user = JsonUtil.readValue(request.getParameter("user"), UmsUser.class);
+            if (user == null && files.isEmpty()) {
                 //同时为null则为参数错误
                 LOGGER.warn("用户修改信息不完整");
                 return new ResponseEntity(CommonResult.failed(ResultCode.USERINFO_UPDATE_FAILED), HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            member = memberService.updateMember(member,file,token);
-            return new ResponseEntity(CommonResult.success(member,ResultCode.USERINFO_UPDATE_SUCCESS),HttpStatus.OK);
-        } catch (IOException e) {
-            LOGGER.error("Get param IOException ", e);
-        } catch (ServletException e) {
-            LOGGER.error("Get param ServletException ", e);
+            UmsMember umsMember = new UmsMember();
+            if(user != null) {
+                memberService.copyUserToMember(user, umsMember);
+                umsMember = memberService.updateMember(umsMember, null, token);
+            } else {
+                //上传头像
+                umsMember = memberService.updateMember(umsMember, files.get(0), token);
+            }
+            memberService.copyMemberToUser(umsMember,user);
+            return new ResponseEntity(CommonResult.success(user,ResultCode.USERINFO_UPDATE_SUCCESS),HttpStatus.OK);
         } catch (UserException e) {
             LOGGER.error("Update member UserException ", e);
         }

@@ -1,6 +1,6 @@
 package com.macro.mall.demo;
 
-import com.fasterxml.telephoneon.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.macro.mall.model.PmsProduct;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

@@ -1,6 +1,6 @@
 package com.macro.mall.mapper;
 
-import com.macro.mall.model.UmsLoginInfo;
+import com.macro.mall.model.UmsAdmin;
 import com.macro.mall.model.UmsAdminExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -12,19 +12,19 @@ public interface UmsAdminMapper {
 
     int deleteByPrimaryKey(Long id);
 
-    int insert(UmsLoginInfo record);
+    int insert(UmsAdmin row);
 
-    int insertSelective(UmsLoginInfo record);
+    int insertSelective(UmsAdmin row);
 
-    List<UmsLoginInfo> selectByExample(UmsAdminExample example);
+    List<UmsAdmin> selectByExample(UmsAdminExample example);
 
-    UmsLoginInfo selectByPrimaryKey(Long id);
+    UmsAdmin selectByPrimaryKey(Long id);
 
-    int updateByExampleSelective(@Param("record") UmsLoginInfo record, @Param("example") UmsAdminExample example);
+    int updateByExampleSelective(@Param("row") UmsAdmin row, @Param("example") UmsAdminExample example);
 
-    int updateByExample(@Param("record") UmsLoginInfo record, @Param("example") UmsAdminExample example);
+    int updateByExample(@Param("row") UmsAdmin row, @Param("example") UmsAdminExample example);
 
-    int updateByPrimaryKeySelective(UmsLoginInfo record);
+    int updateByPrimaryKeySelective(UmsAdmin row);
 
-    int updateByPrimaryKey(UmsLoginInfo record);
+    int updateByPrimaryKey(UmsAdmin row);
 }

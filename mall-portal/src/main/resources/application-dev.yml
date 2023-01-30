@@ -32,6 +32,10 @@ spring:
     virtual-host: /mall
     username: mall
     password: mall
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 1000MB
 
 #logging:
 #  level:

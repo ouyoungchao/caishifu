@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.macro.mall.mapper.UmsAdminMapper">
-  <resultMap id="BaseResultMap" type="com.macro.mall.model.UmsLoginInfo">
+  <resultMap id="BaseResultMap" type="com.macro.mall.model.UmsAdmin">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="username" jdbcType="VARCHAR" property="username" />
     <result column="password" jdbcType="VARCHAR" property="password" />
@@ -73,7 +73,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, username, password, icon, telephone, nick_name, note, create_time, login_time, status
+    id, username, password, icon, telephone, nick_name, note, create_time, login_time, 
+    status, is_buyer
   </sql>
   <select id="selectByExample" parameterType="com.macro.mall.model.UmsAdminExample" resultMap="BaseResultMap">
     select
@@ -105,21 +106,20 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.macro.mall.model.UmsLoginInfo">
+  <insert id="insert" parameterType="com.macro.mall.model.UmsAdmin">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into ums_admin (username, password, icon, 
-      telephone, nick_name, note,
-      create_time, login_time, status, is_buyer
-      )
+      telephone, nick_name, note, 
+      create_time, login_time, status, 
+      is_buyer)
     values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, 
-      #{telephone,jdbcType=VARCHAR}, #{nickName,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR},
-      #{createTime,jdbcType=TIMESTAMP}, #{loginTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER},
-      #{isBuyer, jdbcType=INTEGER}
-      )
+      #{telephone,jdbcType=VARCHAR}, #{nickName,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{loginTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
+      #{isBuyer,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="com.macro.mall.model.UmsLoginInfo">
+  <insert id="insertSelective" parameterType="com.macro.mall.model.UmsAdmin">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
       SELECT LAST_INSERT_ID()
     </selectKey>
@@ -152,6 +152,9 @@
       <if test="status != null">
         status,
       </if>
+      <if test="isBuyer != null">
+        is_buyer,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="username != null">
@@ -181,6 +184,9 @@
       <if test="status != null">
         #{status,jdbcType=INTEGER},
       </if>
+      <if test="isBuyer != null">
+        #{isBuyer,jdbcType=INTEGER},
+      </if>
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.macro.mall.model.UmsAdminExample" resultType="java.lang.Long">
@@ -192,58 +198,62 @@
   <update id="updateByExampleSelective" parameterType="map">
     update ums_admin
     <set>
-      <if test="record.id != null">
-        id = #{record.id,jdbcType=BIGINT},
+      <if test="row.id != null">
+        id = #{row.id,jdbcType=BIGINT},
       </if>
-      <if test="record.username != null">
-        username = #{record.username,jdbcType=VARCHAR},
+      <if test="row.username != null">
+        username = #{row.username,jdbcType=VARCHAR},
       </if>
-      <if test="record.password != null">
-        password = #{record.password,jdbcType=VARCHAR},
+      <if test="row.password != null">
+        password = #{row.password,jdbcType=VARCHAR},
       </if>
-      <if test="record.icon != null">
-        icon = #{record.icon,jdbcType=VARCHAR},
+      <if test="row.icon != null">
+        icon = #{row.icon,jdbcType=VARCHAR},
       </if>
-      <if test="record.telephone != null">
-        telephone = #{record.telephone,jdbcType=VARCHAR},
+      <if test="row.telephone != null">
+        telephone = #{row.telephone,jdbcType=VARCHAR},
       </if>
-      <if test="record.nickName != null">
-        nick_name = #{record.nickName,jdbcType=VARCHAR},
+      <if test="row.nickName != null">
+        nick_name = #{row.nickName,jdbcType=VARCHAR},
       </if>
-      <if test="record.note != null">
-        note = #{record.note,jdbcType=VARCHAR},
+      <if test="row.note != null">
+        note = #{row.note,jdbcType=VARCHAR},
       </if>
-      <if test="record.createTime != null">
-        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      <if test="row.createTime != null">
+        create_time = #{row.createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.loginTime != null">
-        login_time = #{record.loginTime,jdbcType=TIMESTAMP},
+      <if test="row.loginTime != null">
+        login_time = #{row.loginTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.status != null">
-        status = #{record.status,jdbcType=INTEGER},
+      <if test="row.status != null">
+        status = #{row.status,jdbcType=INTEGER},
+      </if>
+      <if test="row.isBuyer != null">
+        is_buyer = #{row.isBuyer,jdbcType=INTEGER},
       </if>
     </set>
-    <if test="_parameter != null">
+    <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
     update ums_admin
-    set id = #{record.id,jdbcType=BIGINT},
-      username = #{record.username,jdbcType=VARCHAR},
-      password = #{record.password,jdbcType=VARCHAR},
-      icon = #{record.icon,jdbcType=VARCHAR},
-      telephone = #{record.telephone,jdbcType=VARCHAR},
-      nick_name = #{record.nickName,jdbcType=VARCHAR},
-      note = #{record.note,jdbcType=VARCHAR},
-      create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      login_time = #{record.loginTime,jdbcType=TIMESTAMP},
-      status = #{record.status,jdbcType=INTEGER}
-    <if test="_parameter != null">
+    set id = #{row.id,jdbcType=BIGINT},
+      username = #{row.username,jdbcType=VARCHAR},
+      password = #{row.password,jdbcType=VARCHAR},
+      icon = #{row.icon,jdbcType=VARCHAR},
+      telephone = #{row.telephone,jdbcType=VARCHAR},
+      nick_name = #{row.nickName,jdbcType=VARCHAR},
+      note = #{row.note,jdbcType=VARCHAR},
+      create_time = #{row.createTime,jdbcType=TIMESTAMP},
+      login_time = #{row.loginTime,jdbcType=TIMESTAMP},
+      status = #{row.status,jdbcType=INTEGER},
+      is_buyer = #{row.isBuyer,jdbcType=INTEGER}
+    <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.macro.mall.model.UmsLoginInfo">
+  <update id="updateByPrimaryKeySelective" parameterType="com.macro.mall.model.UmsAdmin">
     update ums_admin
     <set>
       <if test="username != null">
@@ -273,10 +283,13 @@
       <if test="status != null">
         status = #{status,jdbcType=INTEGER},
       </if>
+      <if test="isBuyer != null">
+        is_buyer = #{isBuyer,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.macro.mall.model.UmsLoginInfo">
+  <update id="updateByPrimaryKey" parameterType="com.macro.mall.model.UmsAdmin">
     update ums_admin
     set username = #{username,jdbcType=VARCHAR},
       password = #{password,jdbcType=VARCHAR},
@@ -286,7 +299,8 @@
       note = #{note,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       login_time = #{loginTime,jdbcType=TIMESTAMP},
-      status = #{status,jdbcType=INTEGER}
+      status = #{status,jdbcType=INTEGER},
+      is_buyer = #{isBuyer,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

@@ -25,8 +25,10 @@ import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
+import com.aliyun.oss.model.GenericRequest;
 import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
+import com.aliyun.oss.model.VoidResult;
 import com.macro.mall.portal.service.OssService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +37,8 @@ import org.springframework.stereotype.Service;
 
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @Service
 public class AliyunOssService<OSSObject> implements OssService {
@@ -68,6 +72,7 @@ public class AliyunOssService<OSSObject> implements OssService {
         OSS ossClient = getOssClient();
         try {
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName,fileName,inputStream);
+            putObjectRequest.setProcess("true");
             PutObjectResult putObjectResult = ossClient.putObject(putObjectRequest);
             return putObjectResult.getResponse().getUri();
         } catch (OSSException oe) {
@@ -78,6 +83,14 @@ public class AliyunOssService<OSSObject> implements OssService {
             LOGGER.warn("uploadFile with Exception",e);
         }
         return "";
+    }
+
+    @Override
+    public void deleteFile(String bucketName, String fileName) {
+        OSS ossClient = getOssClient();
+        GenericRequest genericRequest = new GenericRequest(bucketName,fileName);
+        ossClient.deleteObject(genericRequest);
+
     }
 
     public OSSObject downloadFile(String bucketName, String fileName) {
@@ -99,11 +112,21 @@ public class AliyunOssService<OSSObject> implements OssService {
         if(ossClient == null){
             synchronized (this){
                 if(ossClient == null){
-                    ossClient = new OSSClientBuilder().build(OSS_ALIYUNOsEndPoint, OSS_ACCESSKEY, OSS_ACCESSKEYSECRET);
+                    ossClient = new OSSClientBuilder().build(OSS_ALIYUNOsEndPoint, getOSS_ACCESSKEY(), getOSS_ACCESSKEYSECRET());
                 }
             }
         }
         return ossClient;
     }
+
+    public String getOSS_ACCESSKEY() {
+        return new String(Base64.getDecoder().decode(OSS_ACCESSKEY.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    public String getOSS_ACCESSKEYSECRET(){
+        return new String(Base64.getDecoder().decode(OSS_ACCESSKEYSECRET.getBytes(StandardCharsets.UTF_8)));
+    }
+
+
 
 }
