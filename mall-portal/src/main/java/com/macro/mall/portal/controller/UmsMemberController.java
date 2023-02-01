@@ -179,6 +179,7 @@ public class UmsMemberController {
             } else {
                 //上传头像
                 umsMember = memberService.updateMember(umsMember, files.get(0), token);
+                user = new UmsUser();
             }
             memberService.copyMemberToUser(umsMember,user);
             return new ResponseEntity(CommonResult.success(user,ResultCode.USERINFO_UPDATE_SUCCESS),HttpStatus.OK);

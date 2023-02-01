@@ -171,9 +171,10 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         memberMapper.updateByExampleSelective(member,example);
         //删除老的头像
         if(!memberList.isEmpty() && memberList.get(0).getIcon() != null){
-            String oldAdvatar = memberList.get(0).getIcon().substring(memberList.get(0).getIcon().lastIndexOf(File.pathSeparator));
+            String oldAdvatar = memberList.get(0).getIcon().substring(memberList.get(0).getIcon().lastIndexOf("/")+1);
             ossService.deleteFile(OSS_BUCKET_USERAVATAR,oldAdvatar);
         }
+        memberCacheService.updateMember(member,telephone);
         return getByTelephone(telephone);
     }
 
