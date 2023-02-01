@@ -1,5 +1,6 @@
 package com.macro.mall.service;
 
+import com.macro.mall.model.UmsAdmin;
 import com.macro.mall.model.UmsLoginInfo;
 import com.macro.mall.model.UmsResource;
 
@@ -38,12 +39,12 @@ public interface UmsAdminCacheService {
     /**
      * 获取缓存后台用户信息
      */
-    UmsLoginInfo getAdmin(String username);
+    UmsAdmin getAdmin(String username);
 
     /**
      * 设置缓存后台用户信息
      */
-    void setAdmin(UmsLoginInfo admin);
+    void setAdmin(UmsAdmin admin);
 
     /**
      * 获取缓存后台用户资源列表

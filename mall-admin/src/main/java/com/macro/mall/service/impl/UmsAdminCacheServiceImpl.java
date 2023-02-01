@@ -4,10 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import com.macro.mall.common.service.RedisService;
 import com.macro.mall.dao.UmsAdminRoleRelationDao;
 import com.macro.mall.mapper.UmsAdminRoleRelationMapper;
-import com.macro.mall.model.UmsLoginInfo;
-import com.macro.mall.model.UmsAdminRoleRelation;
-import com.macro.mall.model.UmsAdminRoleRelationExample;
-import com.macro.mall.model.UmsResource;
+import com.macro.mall.model.*;
 import com.macro.mall.service.UmsAdminCacheService;
 import com.macro.mall.service.UmsAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +39,7 @@ public class UmsAdminCacheServiceImpl implements UmsAdminCacheService {
 
     @Override
     public void delAdmin(Long adminId) {
-        UmsLoginInfo admin = adminService.getItem(adminId);
+        UmsAdmin admin = adminService.getItem(adminId);
         if (admin != null) {
             String key = REDIS_DATABASE + ":" + REDIS_KEY_ADMIN + ":" + admin.getUsername();
             redisService.del(key);
@@ -90,13 +87,13 @@ public class UmsAdminCacheServiceImpl implements UmsAdminCacheService {
     }
 
     @Override
-    public UmsLoginInfo getAdmin(String username) {
+    public UmsAdmin getAdmin(String username) {
         String key = REDIS_DATABASE + ":" + REDIS_KEY_ADMIN + ":" + username;
-        return (UmsLoginInfo) redisService.get(key);
+        return (UmsAdmin) redisService.get(key);
     }
 
     @Override
-    public void setAdmin(UmsLoginInfo admin) {
+    public void setAdmin(UmsAdmin admin) {
         String key = REDIS_DATABASE + ":" + REDIS_KEY_ADMIN + ":" + admin.getUsername();
         redisService.set(key, admin, REDIS_EXPIRE);
     }

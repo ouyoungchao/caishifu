@@ -40,7 +40,7 @@ public interface UmsMemberService {
     void updatePassword(String telephone, String password, String authCode);
 
     @Transactional
-    UmsMember updateMember(UmsMember member, MultipartFile file, String token) throws UserException;
+    UmsMember updateMember(UmsMember umsMember, MultipartFile file, String token) throws UserException;
 
     /**
      * 获取当前登录会员
@@ -73,4 +73,8 @@ public interface UmsMemberService {
      * 刷新token
      */
     String refreshToken(String token);
+
+    public void copyMemberToUser(UmsMember member, UmsUser user);
+
+    public void copyUserToMember(UmsUser user, UmsMember member);
 }

@@ -48,6 +48,8 @@ public class UmsUser implements Serializable {
      */
     private String isBuyer;
 
+    private String address;
+
     private int status;
 
     /**
@@ -443,6 +445,14 @@ public class UmsUser implements Serializable {
 
     public void setUserContactTags(String userContactTags) {
         this.userContactTags = userContactTags;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public int getStatus() {

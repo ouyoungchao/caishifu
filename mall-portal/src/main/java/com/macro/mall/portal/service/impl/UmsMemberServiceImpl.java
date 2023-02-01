@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -148,6 +149,9 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         if(member == null){
             member = new UmsMember();
         }
+        UmsMemberExample example = new UmsMemberExample();
+        example.createCriteria().andPhoneEqualTo(telephone);
+        List<UmsMember> memberList = memberMapper.selectByExample(example);
         if (file != null) {
             if (!(file.getOriginalFilename().endsWith(".jpg") || file.getOriginalFilename().endsWith(".png"))) {
                 LOGGER.warn("Upload file is error {}", file);
@@ -163,9 +167,13 @@ public class UmsMemberServiceImpl implements UmsMemberService {
                 throw new UserException(ResultCode.USERINFO_UPDATE_AVATAR_CONTENT_ERROR);
             }
         }
-        UmsMemberExample example = new UmsMemberExample();
-        example.createCriteria().andPhoneEqualTo(telephone);
+
         memberMapper.updateByExampleSelective(member,example);
+        //删除老的头像
+        if(!memberList.isEmpty() && memberList.get(0).getIcon() != null){
+            String oldAdvatar = memberList.get(0).getIcon().substring(memberList.get(0).getIcon().lastIndexOf(File.pathSeparator));
+            ossService.deleteFile(OSS_BUCKET_USERAVATAR,oldAdvatar);
+        }
         return getByTelephone(telephone);
     }
 
@@ -249,7 +257,7 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         return authCode.equals(realAuthCode);
     }
 
-    private void copyMemberToUser(UmsMember member, UmsUser user) {
+    public void copyMemberToUser(UmsMember member, UmsUser user) {
         BeanUtils.copyProperties(member, user);
         user.setUserId(member.getId().toString());
         user.setUserAvatar(member.getIcon());
@@ -257,6 +265,17 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         user.setIsBuyer(member.getIsbuyer());
         user.setUserPhone(member.getPhone());
         user.setStatus(member.getStatus());
+        user.setAddress(member.getAddress());
+    }
+
+    public void copyUserToMember(UmsUser user, UmsMember member) {
+        BeanUtils.copyProperties(user, member);
+        member.setIcon(user.getUserAvatar());
+        member.setNickname(user.getUserNickName());
+        member.setIsbuyer(user.getIsBuyer());
+        member.setPhone(user.getUserPhone());
+        member.setAddress(user.getAddress());
+        member.setStatus(user.getStatus());
     }
 
 }

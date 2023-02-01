@@ -3,7 +3,6 @@ package com.macro.mall.demo.config;
 import com.macro.mall.demo.bo.AdminUserDetails;
 import com.macro.mall.mapper.UmsAdminMapper;
 import com.macro.mall.model.UmsAdmin;
-import com.macro.mall.model.UmsLoginInfo;
 import com.macro.mall.model.UmsAdminExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -70,9 +69,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
                 UmsAdminExample example = new UmsAdminExample();
                 example.createCriteria().andUsernameEqualTo(username);
-                List<UmsLoginInfo> admins = umsAdminMapper.selectByExample(example);
-                if (admins != null && admins.size() > 0) {
-                    return new AdminUserDetails(admins.get(0));
+                List<UmsAdmin> umsAdminList = umsAdminMapper.selectByExample(example);
+                if (umsAdminList != null && umsAdminList.size() > 0) {
+                    return new AdminUserDetails(umsAdminList.get(0));
                 }
                 throw new UsernameNotFoundException("用户名或密码错误");
             }

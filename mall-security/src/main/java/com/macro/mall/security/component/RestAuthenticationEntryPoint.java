@@ -18,7 +18,7 @@ import java.io.IOException;
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        new Exception("logn").printStackTrace();
+        response.setStatus(401);
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Cache-Control","no-cache");
         response.setCharacterEncoding("UTF-8");

@@ -36,8 +36,7 @@ public class UmsMember implements Serializable {
     @ApiModelProperty(value = "生日")
     private Date birthday;
 
-    @ApiModelProperty(value = "所做城市")
-    private String city;
+    private String address;
 
     @ApiModelProperty(value = "职业")
     private String job;
@@ -152,12 +151,12 @@ public class UmsMember implements Serializable {
         this.birthday = birthday;
     }
 
-    public String getCity() {
-        return city;
+    public String getAddress() {
+        return address;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getJob() {
@@ -241,7 +240,7 @@ public class UmsMember implements Serializable {
         sb.append(", icon=").append(icon);
         sb.append(", gender=").append(gender);
         sb.append(", birthday=").append(birthday);
-        sb.append(", city=").append(city);
+        sb.append(", address=").append(address);
         sb.append(", job=").append(job);
         sb.append(", personalizedSignature=").append(personalizedSignature);
         sb.append(", sourceType=").append(sourceType);

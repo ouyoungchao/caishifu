@@ -13,5 +13,7 @@ public interface OssService<T> {
      */
     public String uploadFile(String bucketName, String fileName, InputStream inputStream);
 
+    public void deleteFile(String bucketName, String fileName);
+
     public T downloadFile(String bucketName, String fileName);
 }

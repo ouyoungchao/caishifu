@@ -1,9 +1,8 @@
 package com.macro.mall.service;
 
-import com.macro.mall.common.exception.UserException;
-import com.macro.mall.dto.User;
+import com.macro.mall.dto.UmsAdminParam;
 import com.macro.mall.dto.UpdateAdminPasswordParam;
-import com.macro.mall.model.UmsLoginInfo;
+import com.macro.mall.model.UmsAdmin;
 import com.macro.mall.model.UmsResource;
 import com.macro.mall.model.UmsRole;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,16 +18,12 @@ public interface UmsAdminService {
     /**
      * 根据用户名获取后台管理员
      */
-    UmsLoginInfo getAdminByUsername(String username);
-
+    UmsAdmin getAdminByUsername(String username);
 
     /**
-     * 用户注册
-     * @param user
-     * @return UmsLoginInfo 用户注册信息
-     * @throws UserException
+     * 注册功能
      */
-    UmsLoginInfo register(User user) throws UserException;
+    UmsAdmin register(UmsAdminParam umsAdminParam);
 
     /**
      * 登录功能
@@ -36,7 +31,7 @@ public interface UmsAdminService {
      * @param password 密码
      * @return 生成的JWT的token
      */
-    String login(String username,String password, boolean useVerificationCode) throws UserException;
+    String login(String username,String password);
 
     /**
      * 刷新token的功能
@@ -47,17 +42,17 @@ public interface UmsAdminService {
     /**
      * 根据用户id获取用户
      */
-    UmsLoginInfo getItem(Long id);
+    UmsAdmin getItem(Long id);
 
     /**
      * 根据用户名或昵称分页查询用户
      */
-    List<UmsLoginInfo> list(String keyword, Integer pageSize, Integer pageNum);
+    List<UmsAdmin> list(String keyword, Integer pageSize, Integer pageNum);
 
     /**
      * 修改指定用户信息
      */
-    int update(Long id, UmsLoginInfo admin);
+    int update(Long id, UmsAdmin admin);
 
     /**
      * 删除指定用户
