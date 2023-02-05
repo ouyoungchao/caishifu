@@ -13,7 +13,7 @@
     <result column="icon" jdbcType="VARCHAR" property="icon" />
     <result column="gender" jdbcType="INTEGER" property="gender" />
     <result column="birthday" jdbcType="DATE" property="birthday" />
-    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="addressList" jdbcType="VARCHAR" property="addresslist" />
     <result column="job" jdbcType="VARCHAR" property="job" />
     <result column="personalized_signature" jdbcType="VARCHAR" property="personalizedSignature" />
     <result column="source_type" jdbcType="INTEGER" property="sourceType" />
@@ -83,7 +83,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, member_level_id, username, password, nickname, phone, status, create_time, icon, 
-    gender, birthday, address, job, personalized_signature, source_type, integration, 
+    gender, birthday, addressList, job, personalized_signature, source_type, integration, 
     growth, luckey_count, history_integration, isBuyer
   </sql>
   <select id="selectByExample" parameterType="com.macro.mall.model.UmsMemberExample" resultMap="BaseResultMap">
@@ -123,14 +123,14 @@
     insert into ums_member (member_level_id, username, password, 
       nickname, phone, status, 
       create_time, icon, gender, 
-      birthday, address, job, 
+      birthday, addressList, job, 
       personalized_signature, source_type, integration, 
       growth, luckey_count, history_integration, 
       isBuyer)
     values (#{memberLevelId,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{nickname,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
       #{createTime,jdbcType=TIMESTAMP}, #{icon,jdbcType=VARCHAR}, #{gender,jdbcType=INTEGER}, 
-      #{birthday,jdbcType=DATE}, #{address,jdbcType=VARCHAR}, #{job,jdbcType=VARCHAR}, 
+      #{birthday,jdbcType=DATE}, #{addresslist,jdbcType=VARCHAR}, #{job,jdbcType=VARCHAR}, 
       #{personalizedSignature,jdbcType=VARCHAR}, #{sourceType,jdbcType=INTEGER}, #{integration,jdbcType=INTEGER}, 
       #{growth,jdbcType=INTEGER}, #{luckeyCount,jdbcType=INTEGER}, #{historyIntegration,jdbcType=INTEGER}, 
       #{isbuyer,jdbcType=VARCHAR})
@@ -171,8 +171,8 @@
       <if test="birthday != null">
         birthday,
       </if>
-      <if test="address != null">
-        address,
+      <if test="addresslist != null">
+        addressList,
       </if>
       <if test="job != null">
         job,
@@ -230,8 +230,8 @@
       <if test="birthday != null">
         #{birthday,jdbcType=DATE},
       </if>
-      <if test="address != null">
-        #{address,jdbcType=VARCHAR},
+      <if test="addresslist != null">
+        #{addresslist,jdbcType=VARCHAR},
       </if>
       <if test="job != null">
         #{job,jdbcType=VARCHAR},
@@ -301,8 +301,8 @@
       <if test="row.birthday != null">
         birthday = #{row.birthday,jdbcType=DATE},
       </if>
-      <if test="row.address != null">
-        address = #{row.address,jdbcType=VARCHAR},
+      <if test="row.addresslist != null">
+        addressList = #{row.addresslist,jdbcType=VARCHAR},
       </if>
       <if test="row.job != null">
         job = #{row.job,jdbcType=VARCHAR},
@@ -346,7 +346,7 @@
       icon = #{row.icon,jdbcType=VARCHAR},
       gender = #{row.gender,jdbcType=INTEGER},
       birthday = #{row.birthday,jdbcType=DATE},
-      address = #{row.address,jdbcType=VARCHAR},
+      addressList = #{row.addresslist,jdbcType=VARCHAR},
       job = #{row.job,jdbcType=VARCHAR},
       personalized_signature = #{row.personalizedSignature,jdbcType=VARCHAR},
       source_type = #{row.sourceType,jdbcType=INTEGER},
@@ -392,8 +392,8 @@
       <if test="birthday != null">
         birthday = #{birthday,jdbcType=DATE},
       </if>
-      <if test="address != null">
-        address = #{address,jdbcType=VARCHAR},
+      <if test="addresslist != null">
+        addressList = #{addresslist,jdbcType=VARCHAR},
       </if>
       <if test="job != null">
         job = #{job,jdbcType=VARCHAR},
@@ -434,7 +434,7 @@
       icon = #{icon,jdbcType=VARCHAR},
       gender = #{gender,jdbcType=INTEGER},
       birthday = #{birthday,jdbcType=DATE},
-      address = #{address,jdbcType=VARCHAR},
+      addressList = #{addresslist,jdbcType=VARCHAR},
       job = #{job,jdbcType=VARCHAR},
       personalized_signature = #{personalizedSignature,jdbcType=VARCHAR},
       source_type = #{sourceType,jdbcType=INTEGER},

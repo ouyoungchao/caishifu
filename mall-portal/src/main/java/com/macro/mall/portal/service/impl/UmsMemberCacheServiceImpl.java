@@ -75,8 +75,8 @@ public class UmsMemberCacheServiceImpl implements UmsMemberCacheService {
         if(member.getStatus() != null){
             originalMember.setStatus(member.getStatus());
         }
-        if(member.getAddress() != null){
-            originalMember.setAddress(member.getAddress());
+        if(member.getAddresslist() != null){
+            originalMember.setAddresslist(member.getAddresslist());
         }
         setMember(originalMember);
     }
