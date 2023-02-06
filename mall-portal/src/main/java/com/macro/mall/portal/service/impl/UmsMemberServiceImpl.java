@@ -3,7 +3,6 @@ package com.macro.mall.portal.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.macro.mall.common.api.ResultCode;
 import com.macro.mall.common.exception.Asserts;
-import com.macro.mall.common.exception.CaiShiFuException;
 import com.macro.mall.common.exception.UserException;
 import com.macro.mall.mapper.UmsMemberLevelMapper;
 import com.macro.mall.mapper.UmsMemberMapper;
@@ -30,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -152,6 +150,7 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         UmsMemberExample example = new UmsMemberExample();
         example.createCriteria().andPhoneEqualTo(telephone);
         List<UmsMember> memberList = memberMapper.selectByExample(example);
+        String url = null;
         if (file != null) {
             if (!(file.getOriginalFilename().endsWith(".jpg") || file.getOriginalFilename().endsWith(".png"))) {
                 LOGGER.warn("Upload file is error {}", file);
@@ -161,7 +160,7 @@ public class UmsMemberServiceImpl implements UmsMemberService {
             String fileName = telephone + (new Date().getTime()) + suffix;
             LOGGER.info("upload file " + file.getOriginalFilename());
             try {
-                String url = ossService.uploadFile(OSS_BUCKET_USERAVATAR, fileName, file.getInputStream());
+                url = ossService.uploadFile(OSS_BUCKET_USERAVATAR, fileName, file.getInputStream());
                 member.setIcon(url);
             } catch (IOException e) {
                 throw new UserException(ResultCode.USERINFO_UPDATE_AVATAR_CONTENT_ERROR);
@@ -170,10 +169,11 @@ public class UmsMemberServiceImpl implements UmsMemberService {
 
         memberMapper.updateByExampleSelective(member,example);
         //删除老的头像
-        if(!memberList.isEmpty() && memberList.get(0).getIcon() != null){
-            String oldAdvatar = memberList.get(0).getIcon().substring(memberList.get(0).getIcon().lastIndexOf(File.pathSeparator));
+        if(url != null && !memberList.isEmpty() && memberList.get(0).getIcon() != null){
+            String oldAdvatar = memberList.get(0).getIcon().substring(memberList.get(0).getIcon().lastIndexOf("/")+1);
             ossService.deleteFile(OSS_BUCKET_USERAVATAR,oldAdvatar);
         }
+        memberCacheService.updateMember(member,telephone);
         return getByTelephone(telephone);
     }
 
@@ -265,7 +265,9 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         user.setIsBuyer(member.getIsbuyer());
         user.setUserPhone(member.getPhone());
         user.setStatus(member.getStatus());
-        user.setAddress(member.getAddress());
+        user.setAddressList(member.getAddresslist());
+        user.setUserSign(member.getPersonalizedSignature());
+        user.setUserSex(member.getGender());
     }
 
     public void copyUserToMember(UmsUser user, UmsMember member) {
@@ -274,8 +276,10 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         member.setNickname(user.getUserNickName());
         member.setIsbuyer(user.getIsBuyer());
         member.setPhone(user.getUserPhone());
-        member.setAddress(user.getAddress());
+        member.setAddresslist(user.getAddressList());
         member.setStatus(user.getStatus());
+        member.setPersonalizedSignature(user.getUserSign());
+        member.setGender(user.getUserSex());
     }
 
 }

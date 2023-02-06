@@ -63,6 +63,24 @@ public class UmsMemberCacheServiceImpl implements UmsMemberCacheService {
         redisService.set(key, member, REDIS_EXPIRE);
     }
 
+    @Override
+    public void updateMember(UmsMember member,String phone){
+        UmsMember originalMember = getMemberByTelephone(phone);
+        if(member.getIcon() != null){
+            originalMember.setIcon(member.getIcon());
+        }
+        if(member.getPhone() != null){
+            originalMember.setPhone(member.getPhone());
+        }
+        if(member.getStatus() != null){
+            originalMember.setStatus(member.getStatus());
+        }
+        if(member.getAddresslist() != null){
+            originalMember.setAddresslist(member.getAddresslist());
+        }
+        setMember(originalMember);
+    }
+
 
 
     @CacheException

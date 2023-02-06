@@ -37,4 +37,6 @@ public interface UmsMemberCacheService {
      * 获取验证码
      */
     String getAuthCode(String telephone);
+
+    void updateMember(UmsMember member, String telephone);
 }

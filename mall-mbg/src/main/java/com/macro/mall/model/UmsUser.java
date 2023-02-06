@@ -1,11 +1,7 @@
 package com.macro.mall.model;
 
 
-import cn.hutool.json.JSON;
-import cn.hutool.json.ObjectMapper;
-
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -48,7 +44,7 @@ public class UmsUser implements Serializable {
      */
     private String isBuyer;
 
-    private String address;
+    private String addressList;
 
     private int status;
 
@@ -64,7 +60,7 @@ public class UmsUser implements Serializable {
     /**
      * 性别
      */
-    private String userSex;
+    private  int userSex;
     /**
      * 籍贯
      */
@@ -263,13 +259,7 @@ public class UmsUser implements Serializable {
         this.userHeader = userHeader;
     }
 
-    public String getUserSex() {
-        return userSex;
-    }
 
-    public void setUserSex(String userSex) {
-        this.userSex = userSex;
-    }
 
     public String getUserRegion() {
         return userRegion;
@@ -285,6 +275,14 @@ public class UmsUser implements Serializable {
 
     public void setUserSign(String userSign) {
         this.userSign = userSign;
+    }
+
+    public int getUserSex() {
+        return userSex;
+    }
+
+    public void setUserSex(int userSex) {
+        this.userSex = userSex;
     }
 
     public String getUserEmail() {
@@ -447,12 +445,12 @@ public class UmsUser implements Serializable {
         this.userContactTags = userContactTags;
     }
 
-    public String getAddress() {
-        return address;
+    public String getAddressList() {
+        return addressList;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setAddressList(String addressList) {
+        this.addressList = addressList;
     }
 
     public int getStatus() {
