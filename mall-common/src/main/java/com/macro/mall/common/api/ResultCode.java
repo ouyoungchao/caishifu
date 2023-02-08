@@ -12,13 +12,13 @@ public enum ResultCode implements IErrorCode {
 
     //注册相关响应码，以10xx开头
     REGISTER_FAILED_USER_EXIST(1002, "用户已存在"),
-    REGISTER_USER_SUCCESS(1001, "用户注册成功"),
+    REGISTER_USER_SUCCESS(200, "用户注册成功"),
     //登录相关响应码以11xx开头
     LOGIN_PARAM_INVALID(1102, "请输入完整登录信息"),
     LOGIN_USERNAME_OR_PASSWOR_ERROR(1103, "用户名或密码错误"),
     LOGIN_USERNAME_IS_FIRBIDDEN(1104, "用户被禁用"),
     LOGIN_ERROR(1105, "服务器登录异常"),
-    LOGIN_SUCCESS(1106, "登录成功"),
+    LOGIN_SUCCESS(200, "登录成功"),
 
     //验证码相关错误
     VERIFICATION_CODE_INVALID(1200, "验证码错误"),
