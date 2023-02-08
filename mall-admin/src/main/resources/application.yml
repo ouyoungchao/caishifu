@@ -46,6 +46,8 @@ secure:
       - /druid/**
       - /caishifu/login
       - /caishifu/register
+      - /admin/login
+      - /admin/register
       - /admin/info
       - /admin/logout
       - /minio/upload
