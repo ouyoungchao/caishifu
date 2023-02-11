@@ -31,7 +31,7 @@ public class UmsMember implements Serializable {
     private String icon;
 
     @ApiModelProperty(value = "性别：0->未知；1->男；2->女")
-    private Integer gender;
+    private Integer gender = 0;
 
     @ApiModelProperty(value = "生日")
     private Date birthday;

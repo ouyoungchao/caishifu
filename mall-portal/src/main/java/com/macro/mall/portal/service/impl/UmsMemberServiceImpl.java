@@ -112,6 +112,7 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         umsMember.setIsbuyer(isBuyer);
         umsMember.setCreateTime(new Date());
         umsMember.setStatus(1);
+        umsMember.setGender(0);
         //获取默认会员等级并设置
         UmsMemberLevelExample levelExample = new UmsMemberLevelExample();
         levelExample.createCriteria().andDefaultStatusEqualTo(1);

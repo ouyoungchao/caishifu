@@ -1,2 +1,5 @@
 # MyBatis generate files #
 src\main\resources\com\macro\mall\mapper
+
+### Local dev ###
+/src/main/resources/application-dev.yml
