@@ -1,15 +1,11 @@
 package com.macro.mall.portal.service;
 
-import com.macro.mall.common.exception.UserException;
+import com.macro.mall.common.exception.CaiShiFuException;
 import com.macro.mall.model.UmsMember;
 import com.macro.mall.model.UmsUser;
-import com.macro.mall.portal.domain.MemberDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 会员管理Service
@@ -30,7 +26,7 @@ public interface UmsMemberService {
      * 用户注册
      */
     @Transactional
-    void register(String nicName, String password, String telephone, String authCode, String isBuyer) throws UserException;
+    void register(String nicName, String password, String telephone, String authCode, String isBuyer) throws CaiShiFuException;
 
 
     /**
@@ -40,7 +36,7 @@ public interface UmsMemberService {
     void updatePassword(String telephone, String password, String authCode);
 
     @Transactional
-    UmsMember updateMember(UmsMember umsMember, MultipartFile file, String token) throws UserException;
+    UmsMember updateMember(UmsMember umsMember, MultipartFile file, String token) throws CaiShiFuException;
 
     /**
      * 获取当前登录会员
@@ -61,13 +57,13 @@ public interface UmsMemberService {
     /**
      * 获取用户信息
      */
-    UmsUser loadUserByToken(String token) throws UserException;
+    UmsUser loadUserByToken(String token) throws CaiShiFuException;
 
 
     /**
      * 登录后获取token
      */
-    String login(String telephone, String password, boolean isAuthCode) throws UserException;
+    String login(String telephone, String password, boolean isAuthCode) throws CaiShiFuException;
 
     /**
      * 刷新token

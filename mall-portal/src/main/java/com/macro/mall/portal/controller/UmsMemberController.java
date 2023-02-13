@@ -2,8 +2,8 @@ package com.macro.mall.portal.controller;
 
 import com.macro.mall.common.api.CommonResult;
 import com.macro.mall.common.api.ResultCode;
+import com.macro.mall.common.api.ResultMessage;
 import com.macro.mall.common.exception.CaiShiFuException;
-import com.macro.mall.common.exception.UserException;
 import com.macro.mall.common.util.JsonUtil;
 import com.macro.mall.common.util.ValidateUtil;
 import com.macro.mall.model.UmsMember;
@@ -17,8 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,9 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,75 +56,77 @@ public class UmsMemberController {
     @ApiOperation("会员注册")
     @RequestMapping(value = "/sso/register", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity register(@RequestParam String nicName,
+    public CommonResult register(@RequestParam String nicName,
                                    @RequestParam String password,
                                    @RequestParam String telephone,
                                    @RequestParam String authCode,
                                    @RequestParam String isBuyer) {
         //参数是否合法
         if (!ValidateUtil.isValidChinesePhone(telephone) || (password.trim().isEmpty() || authCode.trim().isEmpty())) {
-            return new ResponseEntity(CommonResult.failed(ResultCode.PARAM_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CommonResult.failed(ResultMessage.ERROR_PARAM);
         }
         try {
             memberService.register(nicName, password, telephone, authCode, isBuyer);
-            return new ResponseEntity(CommonResult.success(ResultCode.REGISTER_USER_SUCCESS), HttpStatus.OK);
-        } catch (UserException e) {
+            return CommonResult.success(ResultMessage.REGISTER_SUCCESS);
+        } catch (CaiShiFuException e) {
             LOGGER.error("Register user failed ", e);
-            return new ResponseEntity(CommonResult.failed(e.getResultCode()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CommonResult.failed(ResultMessage.REGISTER_FAILED);
         }
     }
 
     @ApiOperation("会员登录")
     @RequestMapping(value = "/sso/login", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity login(@RequestParam String telephone,
+    public CommonResult login(@RequestParam String telephone,
                                 @RequestParam String password,
                                 @RequestParam String isAuthCode) {
         if (!ValidateUtil.isValidChinesePhone(telephone)) {
-            return new ResponseEntity(CommonResult.failed(ResultCode.PARAM_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CommonResult.failed(ResultMessage.ERROR_PARAM);
         }
         String token = null;
         try {
             token = memberService.login(telephone, password, Boolean.getBoolean(isAuthCode));
 
-        } catch (UserException e) {
-            return new ResponseEntity(CommonResult.failed(e.getResultCode()), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (CaiShiFuException e) {
+            LOGGER.warn("Login failed ",e);
+            return CommonResult.failed(e.getMessage());
         }
         Map<String, Object> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
         tokenMap.put("tokenHead", tokenHead);
-
-        return new ResponseEntity(CommonResult.success(tokenMap, ResultCode.LOGIN_SUCCESS), HttpStatus.OK);
+        return CommonResult.success(tokenMap, ResultCode.SUCCESS);
     }
 
     @ApiOperation("获取会员信息")
     @RequestMapping(value = "/userInfo", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity info(HttpServletRequest request) {
+    public CommonResult getUserInfo(HttpServletRequest request) {
         String token = request.getHeader(tokenHeader).substring(tokenHead.length());
         UmsUser userDetails = null;
         try {
             userDetails = memberService.loadUserByToken(token);
-            return new ResponseEntity(CommonResult.success(userDetails, ResultCode.USERINFO_GET_SUCCESS), HttpStatus.OK);
-        } catch (UserException e) {
-            return new ResponseEntity(CommonResult.failed(ResultCode.USERINFO_GET_FAILED), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CommonResult.success(userDetails, ResultCode.SUCCESS);
+        } catch (CaiShiFuException e) {
+            LOGGER.warn("getUserInfo failed ",e);
+            return CommonResult.failed(e.getMessage());
         }
     }
 
     @ApiOperation("获取验证码")
     @RequestMapping(value = "/getAuthCode", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity getAuthCode(@RequestParam String telephone) {
+    public CommonResult getAuthCode(@RequestParam String telephone) {
         if (!ValidateUtil.isValidChinesePhone(telephone)) {
-            return new ResponseEntity(CommonResult.failed(ResultCode.PARAM_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CommonResult.failed(ResultMessage.ERROR_PHONE);
         }
         try {
             if (messageService.sendMessage(telephone)) {
-                return new ResponseEntity(CommonResult.success(null, ResultCode.VERIFICATION_GET_SUCCESS), HttpStatus.OK);
+                return CommonResult.success(null,"GET_VERIFICATION_SUCCESS");
             }
-            return new ResponseEntity(CommonResult.failed(ResultCode.VERIFICATION_GET_FAILED), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CommonResult.failed(ResultMessage.GET_VERIFICATION_FAILED);
         } catch (CaiShiFuException e) {
-            return new ResponseEntity(CommonResult.failed(ResultCode.VERIFICATION_GET_FAILED), HttpStatus.INTERNAL_SERVER_ERROR);
+            LOGGER.warn("getAuthCode failed ",e);
+            return CommonResult.failed(e.getMessage());
         }
     }
 
@@ -161,7 +159,7 @@ public class UmsMemberController {
     @ApiOperation("更新用户信息")
     @RequestMapping(value = "/updateMember", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity updateMember(HttpServletRequest request) {
+    public CommonResult updateMember(HttpServletRequest request) {
         String token = request.getHeader(tokenHeader).substring(tokenHead.length());
         try {
             List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles("file");
@@ -170,7 +168,7 @@ public class UmsMemberController {
             if (user == null && files.isEmpty()) {
                 //同时为null则为参数错误
                 LOGGER.warn("用户修改信息不完整");
-                return new ResponseEntity(CommonResult.failed(ResultCode.USERINFO_UPDATE_FAILED), HttpStatus.INTERNAL_SERVER_ERROR);
+                return CommonResult.failed(ResultMessage.ERROR_PARAM);
             }
             UmsMember umsMember = new UmsMember();
             if(user != null) {
@@ -182,11 +180,11 @@ public class UmsMemberController {
                 user = new UmsUser();
             }
             memberService.copyMemberToUser(umsMember,user);
-            return new ResponseEntity(CommonResult.success(user,ResultCode.USERINFO_UPDATE_SUCCESS),HttpStatus.OK);
-        } catch (UserException e) {
+            return CommonResult.success(user,ResultCode.SUCCESS);
+        } catch (CaiShiFuException e) {
             LOGGER.error("Update member UserException ", e);
+            return CommonResult.failed(e.getMessage());
         }
-        return new ResponseEntity(CommonResult.failed(ResultCode.USERINFO_UPDATE_FAILED), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
