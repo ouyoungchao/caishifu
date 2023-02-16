@@ -1,16 +1,16 @@
 package com.macro.mall.portal.service.impl;
 
 import cn.hutool.core.util.StrUtil;
-import com.macro.mall.common.api.ResultCode;
+import com.macro.mall.common.api.ResultMessage;
 import com.macro.mall.common.exception.Asserts;
-import com.macro.mall.common.exception.UserException;
+import com.macro.mall.common.exception.CaiShiFuException;
 import com.macro.mall.mapper.UmsMemberLevelMapper;
 import com.macro.mall.mapper.UmsMemberMapper;
 import com.macro.mall.model.*;
 import com.macro.mall.portal.domain.MemberDetails;
+import com.macro.mall.portal.service.OssService;
 import com.macro.mall.portal.service.UmsMemberCacheService;
 import com.macro.mall.portal.service.UmsMemberService;
-import com.macro.mall.portal.service.OssService;
 import com.macro.mall.security.util.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,11 +90,11 @@ public class UmsMemberServiceImpl implements UmsMemberService {
     }
 
     @Override
-    public void register(String nicName, String password, String telephone, String authCode, String isBuyer) throws UserException {
+    public void register(String nicName, String password, String telephone, String authCode, String isBuyer) throws CaiShiFuException {
         //验证验证码
         if (!verifyAuthCode(authCode, telephone)) {
-            LOGGER.warn("%s %s %s", telephone, ResultCode.VERIFICATION_CODE_INVALID.getMessage(), authCode);
-            throw new UserException(ResultCode.VERIFICATION_CODE_INVALID);
+            LOGGER.warn("%s %s %s", telephone, ResultMessage.INVALIDE_VERIFICATION, authCode);
+            throw new CaiShiFuException(ResultMessage.INVALIDE_VERIFICATION);
         }
         //查询是否已有该用户
         UmsMemberExample example = new UmsMemberExample();
@@ -102,7 +102,7 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         List<UmsMember> umsMembers = memberMapper.selectByExample(example);
         if (!CollectionUtils.isEmpty(umsMembers)) {
             LOGGER.warn("User " + telephone + " has exist");
-            throw new UserException(ResultCode.REGISTER_FAILED_USER_EXIST);
+            throw new CaiShiFuException(ResultMessage.USER_EXIST);
         }
         //没有该用户进行添加操作
         UmsMember umsMember = new UmsMember();
@@ -112,6 +112,7 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         umsMember.setIsbuyer(isBuyer);
         umsMember.setCreateTime(new Date());
         umsMember.setStatus(1);
+        umsMember.setGender(0);
         //获取默认会员等级并设置
         UmsMemberLevelExample levelExample = new UmsMemberLevelExample();
         levelExample.createCriteria().andDefaultStatusEqualTo(1);
@@ -142,7 +143,7 @@ public class UmsMemberServiceImpl implements UmsMemberService {
     }
 
     @Override
-    public UmsMember updateMember(UmsMember member, MultipartFile file, String token) throws UserException {
+    public UmsMember updateMember(UmsMember member, MultipartFile file, String token) throws CaiShiFuException {
         String telephone = jwtTokenUtil.getUserNameFromToken(token);
         if(member == null){
             member = new UmsMember();
@@ -154,7 +155,7 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         if (file != null) {
             if (!(file.getOriginalFilename().endsWith(".jpg") || file.getOriginalFilename().endsWith(".png"))) {
                 LOGGER.warn("Upload file is error {}", file);
-                throw new UserException(ResultCode.USERINFO_UPDATE_AVATAR_SUFFIX_ERROR);
+                throw new CaiShiFuException(ResultMessage.INVALID_SUFFIX);
             }
             String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."), file.getOriginalFilename().length());
             String fileName = telephone + (new Date().getTime()) + suffix;
@@ -163,10 +164,10 @@ public class UmsMemberServiceImpl implements UmsMemberService {
                 url = ossService.uploadFile(OSS_BUCKET_USERAVATAR, fileName, file.getInputStream());
                 member.setIcon(url);
             } catch (IOException e) {
-                throw new UserException(ResultCode.USERINFO_UPDATE_AVATAR_CONTENT_ERROR);
+                LOGGER.warn("ossService uploadFile failed ", e);
+                throw new CaiShiFuException(ResultMessage.UPLOAD_AVATAR_FAILED);
             }
         }
-
         memberMapper.updateByExampleSelective(member,example);
         //删除老的头像
         if(url != null && !memberList.isEmpty() && memberList.get(0).getIcon() != null){
@@ -204,7 +205,7 @@ public class UmsMemberServiceImpl implements UmsMemberService {
     }
 
     @Override
-    public UmsUser loadUserByToken(String token) throws UserException {
+    public UmsUser loadUserByToken(String token) throws CaiShiFuException {
         String telephone = jwtTokenUtil.getUserNameFromToken(token);
         try {
             MemberDetails member = (MemberDetails) loadUserByTelephone(telephone);
@@ -212,18 +213,18 @@ public class UmsMemberServiceImpl implements UmsMemberService {
             copyMemberToUser(member.getUmsMember(), user);
             return user;
         } catch (AuthenticationException e) {
-            throw new UserException(ResultCode.USERINFO_GET_FAILED);
+            throw new CaiShiFuException(ResultMessage.QUERY_USER_INFO_FAILED);
         }
     }
 
 
     @Override
-    public String login(String telephone, String password, boolean isAuthCode) throws UserException {
+    public String login(String telephone, String password, boolean isAuthCode) throws CaiShiFuException {
         //验证验证码
         if (isAuthCode) {
             if (!verifyAuthCode(password, telephone)) {
-                LOGGER.warn("%s %s %s", telephone, ResultCode.VERIFICATION_CODE_INVALID.getMessage(), password);
-                throw new UserException(ResultCode.VERIFICATION_CODE_INVALID);
+                LOGGER.warn("%s %s %s", telephone, ResultMessage.INVALIDE_VERIFICATION, password);
+                throw new CaiShiFuException(ResultMessage.INVALIDE_VERIFICATION);
             }
         }
         String token = null;
@@ -231,14 +232,14 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         try {
             UserDetails userDetails = this.loadUserByTelephone(telephone);
             if (!isAuthCode && !passwordEncoder.matches(password, userDetails.getPassword())) {
-                throw new UserException(ResultCode.LOGIN_USERNAME_OR_PASSWOR_ERROR);
+                throw new CaiShiFuException(ResultMessage.USERNAME_OR_PASSWORD_ERROR);
             }
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             token = jwtTokenUtil.generateToken(userDetails);
         } catch (AuthenticationException e) {
             LOGGER.warn("登录异常:{}", e.getMessage());
-            throw new UserException(ResultCode.LOGIN_ERROR);
+            throw new CaiShiFuException(ResultMessage.LOGIN_FAILED);
         }
         return token;
     }

@@ -28,7 +28,6 @@ import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.GenericRequest;
 import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
-import com.aliyun.oss.model.VoidResult;
 import com.macro.mall.portal.service.OssService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
