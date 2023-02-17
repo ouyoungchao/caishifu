@@ -8,10 +8,22 @@ import com.macro.mall.common.api.IErrorCode;
  */
 public class ApiException extends RuntimeException {
     private IErrorCode errorCode;
+    private String message;
 
     public ApiException(IErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
+    }
+
+    /**
+     * 应用于错误弹窗提示，errorCode中的message作为title， message作为提示内容
+     * @param errorCode
+     * @param message
+     */
+    public ApiException(IErrorCode errorCode, String message) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
+        this.message = message;
     }
 
     public ApiException(String message) {
@@ -29,4 +41,10 @@ public class ApiException extends RuntimeException {
     public IErrorCode getErrorCode() {
         return errorCode;
     }
+
+    /**
+     * 用于放在响应的data中的message
+     * @return
+     */
+    public String getDataMessage() { return this.message; }
 }

@@ -2,6 +2,7 @@ package com.macro.mall.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.PageHelper;
+import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.mapper.UmsMemberMapper;
 import com.macro.mall.model.UmsMember;
 import com.macro.mall.model.UmsMemberExample;
@@ -29,13 +30,13 @@ public class UmsMemberServiceImpl implements UmsMemberService {
     }
 
     @Override
-    public List<UmsMember> list(String keyword, Integer pageSize, Integer pageNum) {
+    public CommonPage<UmsMember> list(String keyword, Integer pageSize, Integer pageNum) {
         PageHelper.startPage(pageNum, pageSize);
         UmsMemberExample memberExample = new UmsMemberExample();
         if (StrUtil.isNotEmpty(keyword)) {
             memberExample.createCriteria().andPhoneLike(keyword);
         }
-        return memberMapper.selectByExample(memberExample);
+        return CommonPage.restPage(memberMapper.selectByExample(memberExample));
     }
 
     @Override

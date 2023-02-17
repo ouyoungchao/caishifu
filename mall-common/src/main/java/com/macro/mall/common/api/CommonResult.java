@@ -68,6 +68,17 @@ public class CommonResult<T> {
     }
 
     /**
+     * 带返回数据的失败结果
+     * @param errorCode 粗欧码
+     * @param message   错误信息
+     * @param data      数据
+     * @param <T>
+     */
+    public static <T> CommonResult<T> failed(IErrorCode errorCode,String message, T data) {
+        return new CommonResult<T>(errorCode.getCode(), message, data);
+    }
+
+    /**
      * 失败返回结果
      * @param message 提示信息
      */

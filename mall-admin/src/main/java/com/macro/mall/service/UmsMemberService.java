@@ -1,6 +1,8 @@
 package com.macro.mall.service;
 
+import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.model.UmsMember;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -9,6 +11,8 @@ import java.util.List;
  * @description 会员管理
  * @create by yhdjy 2023/2/16 20:09
  */
+
+@Component
 public interface UmsMemberService {
 
     /**
@@ -24,7 +28,7 @@ public interface UmsMemberService {
      * @param pageNum
      * @return
      */
-    List<UmsMember> list(String keyword, Integer pageSize, Integer pageNum);
+    CommonPage<UmsMember> list(String keyword, Integer pageSize, Integer pageNum);
 
     /**
      * 锁定会员用户
